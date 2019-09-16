@@ -22,13 +22,13 @@ def direction(from_cell, to_cell):
     dy = to_cell[1] - from_cell[1]
 
     if dx == 1:
-        return 'east'
+        return 'left'
     elif dx == -1:
-        return 'west'
+        return 'right'
     elif dy == -1:
-        return 'north'
+        return 'up
     elif dy == 1:
-        return 'south'
+        return 'down'
 
 
 def distance(p, q):
