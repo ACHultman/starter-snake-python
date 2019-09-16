@@ -26,7 +26,7 @@ def direction(from_cell, to_cell):
     elif dx == -1:
         return 'right'
     elif dy == -1:
-        return 'up
+        return 'up'
     elif dy == 1:
         return 'down'
 
