@@ -253,9 +253,8 @@ def move():
         assert path[0] == tuple(snek_head)
         assert len(path) > 1
 
-    return {
-        'move': direction(path[0], path[1]),
-    }
+    return move_response(direction(path[0], path[1]))
+
 
 
 @bottle.post('/end')
