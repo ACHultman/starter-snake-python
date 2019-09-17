@@ -5,7 +5,7 @@ import os
 import bottle
 
 from a_star import *
-from api import ping_response, start_response, end_response
+from api import ping_response, start_response, end_response, move_response
 
 SNEK_BUFFER = 3
 ID = 'de508402-17c8-4ac7-ab0b-f96cb53fbee8'
