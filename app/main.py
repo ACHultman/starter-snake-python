@@ -5,7 +5,7 @@ import os
 import bottle
 
 from a_star import *
-from api import ping_response, start_response, end_response
+from api import ping_response, start_response, end_response, move_response
 
 SNEK_BUFFER = 3
 ID = 'de508402-17c8-4ac7-ab0b-f96cb53fbee8'
@@ -26,7 +26,7 @@ def direction(from_cell, to_cell):
     elif dx == -1:
         return 'right'
     elif dy == -1:
-        return 'up
+        return 'up'
     elif dy == 1:
         return 'down'
 
@@ -253,9 +253,7 @@ def move():
         assert path[0] == tuple(snek_head)
         assert len(path) > 1
 
-    return {
-        'move': direction(path[0], path[1]),
-    }
+    return move_response('down')
 
 
 @bottle.post('/end')
