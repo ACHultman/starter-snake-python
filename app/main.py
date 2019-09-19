@@ -161,27 +161,13 @@ def move():
     data = bottle.request.json
     snek, grid = init(data)
 
-    for enemy in data['snakes']:
-        if enemy['id'] == ID:
-            continue
-        if len(enemy['coords']) > len(snek['coords']) - 1:
-            if enemy['coords'][0][1] < data['height'] - 1:
-                grid[enemy['coords'][0][0]][enemy['coords'][0][1] + 1] = SAFETY
-            if enemy['coords'][0][1] > 0:
-                grid[enemy['coords'][0][0]][enemy['coords'][0][1] - 1] = SAFETY
-
-            if enemy['coords'][0][0] < data['width'] - 1:
-                grid[enemy['coords'][0][0] + 1][enemy['coords'][0][1]] = SAFETY
-            if enemy['coords'][0][0] > 0:
-                grid[enemy['coords'][0][0] - 1][enemy['coords'][0][1]] = SAFETY
 
     snek_head = snek['coords'][0]
     snek_coords = snek['coords']
     path = None
     middle = [data['width'] / 2, data['height'] / 2]
     foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    if data['mode'] == 'advanced':
-        foods = data['gold'] + foods
+
     for food in foods:
         # print food
         tentative_path = a_star(snek_head, food, grid, snek_coords)
@@ -201,59 +187,9 @@ def move():
         if dead:
             continue
 
-        # Update snek
-        if path_length < snek_length:
-            remainder = snek_length - path_length
-            new_snek_coords = list(reversed(tentative_path)) + snek_coords[:remainder]
-        else:
-            new_snek_coords = list(reversed(tentative_path))[:snek_length]
+    path = a_star(snek_head, foods[0], grid, snek_coords)
 
-        if grid[new_snek_coords[0][0]][new_snek_coords[0][1]] == FOOD:
-            # we ate food so we grow
-            new_snek_coords.append(new_snek_coords[-1])
-
-        # Create a new grid with the updates snek positions
-        new_grid = copy.deepcopy(grid)
-
-        for coord in snek_coords:
-            new_grid[coord[0]][coord[1]] = 0
-        for coord in new_snek_coords:
-            new_grid[coord[0]][coord[1]] = SNAKE
-
-        # printg(grid, 'orig')
-        # printg(new_grid, 'new')
-
-        # print snek['coords'][-1]
-        foodtotail = a_star(food, new_snek_coords[-1], new_grid, new_snek_coords)
-        if foodtotail:
-            path = tentative_path
-            break
-        # print "no path to tail from food"
-
-    if not path:
-        path = a_star(snek_head, snek['coords'][-1], grid, snek_coords)
-
-    despair = not (path and len(path) > 1)
-
-    if despair:
-        for neighbour in neighbours(snek_head, grid, 0, snek_coords, [1, 2, 5]):
-            path = a_star(snek_head, neighbour, grid, snek_coords)
-            # print 'i\'m scared'
-            break
-
-    despair = not (path and len(path) > 1)
-
-    if despair:
-        for neighbour in neighbours(snek_head, grid, 0, snek_coords, [1, 2]):
-            path = a_star(snek_head, neighbour, grid, snek_coords)
-            # print 'lik so scared'
-            break
-
-    if path:
-        assert path[0] == tuple(snek_head)
-        assert len(path) > 1
-
-    return move_response('down')
+    return move_response(path[0])
 
 
 @bottle.post('/end')
