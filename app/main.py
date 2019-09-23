@@ -168,7 +168,8 @@ def move():
                 in_trouble = True
         if in_trouble:
             continue
-
+    print(json.dumps(data))
+    print(path)
     return move_response(path[0])
 
 
