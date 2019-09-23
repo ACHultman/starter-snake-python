@@ -168,6 +168,7 @@ def move():
                 in_trouble = True
         if in_trouble:
             continue
+    print(path)
 
     for element in path:
         if element is (1, 0):
@@ -180,6 +181,9 @@ def move():
             path[element] = "down"
         else:
             break
+
+    print(json.dumps(data))
+    print(path)
 
     return move_response(path[0])
 
