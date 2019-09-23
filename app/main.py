@@ -246,9 +246,9 @@ def move():
     foods = sorted(foods, key=lambda p: distance(p, snake_head))
 
     for food in foods:
-        food_coords = ((foods[0]), foods[1])
+        close_food = food
         # print food
-        path = AStarSearch(snake_head, food_coords, grid_astar, avoid)
+        path = AStarSearch(snake_head, close_food, grid_astar, avoid)
         if not path:
             # print "no path to food"
             continue
@@ -260,7 +260,7 @@ def move():
         for enemy in json_data_board['snakes']:
             if enemy['name'] == NAME:
                 continue
-            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), food_coords):
+            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), close_food):
                 in_trouble = True
         if in_trouble:
             continue
