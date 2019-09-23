@@ -42,8 +42,7 @@ def init(data):
     """
     Function for initializing the board.
     """
-    json_data = json.load(data)
-    json_data_board = json_data['board']
+    json_data_board = data['board']
     height = json_data_board['height']
 
     grid = [[0 for col in xrange(height + 1)] for row in xrange(height)]
@@ -55,7 +54,7 @@ def init(data):
     for f in json_data_board['food']:
         grid[f['x']][f['y']] = FOOD
 
-    my_snake = json_data['you']
+    my_snake = data['you']
 
     avoid = []
     for rownum, row in enumerate(grid):
@@ -230,8 +229,7 @@ def move():
     data = bottle.request.json
     snake, grid, avoid = init(data)
 
-    json_data = json.load(data)
-    json_data_board = json_data['board']
+    json_data_board = data['board']
 
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
     # snake_coords = snake['body']
