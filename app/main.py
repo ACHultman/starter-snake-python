@@ -231,7 +231,7 @@ def move():
 
     json_data_board = data['board']
 
-    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
+    snake_head = (int(snake['body'][0]['x']), int(snake['body'][0]['y']))
     # snake_coords = snake['body']
     path = None
     tentative_path = AStarGraph(avoid)
@@ -240,7 +240,7 @@ def move():
     foods = sorted(json_data_board['food'], key=lambda p: closest(p, snake_head))
 
     for food in foods:
-        food_coords = (food['x'], food['y'])
+        food_coords = (int(food['x']), int(food['y']))
         # print food
         path = tentative_path.AStarSearch(snake_head, food_coords, grid)
         if not path:
