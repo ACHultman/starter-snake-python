@@ -6,7 +6,7 @@ from astar import *
 from api import ping_response, start_response, end_response, move_response
 
 SNEK_BUFFER = 3
-NAME = "Fer-de-lance"
+NAME = "ACHultman / Fer-de-lance"
 SNAKE = 1
 FOOD = 3
 SAFETY = 5
@@ -42,18 +42,28 @@ def init(data):
     """
     Function for initializing the board.
     """
+    json_data = json.load(data)
+    json_data_board = json_data['board']
+    height = json_data_board['height']
 
-    grid = [[0 for col in xrange(data['height'])] for row in xrange(data['width'])]
-    for snek in data['snakes']:
-        if snek['name'] == NAME:  # finds own snake
-            my_snake = snek  # copies data
-        for coord in snek['coords']:
-            grid[coord[0]][coord[1]] = SNAKE
+    grid = [[0 for col in xrange(height + 1)] for row in xrange(height)]
+    for snake in json_data_board['snakes']:
 
-    for f in data['food']:
-        grid[f[0]][f[1]] = FOOD
+        for coord in snake['body']:
+            grid[coord['x']][coord['y']] = SNAKE
 
-    return my_snake, grid
+    for f in json_data_board['food']:
+        grid[f['x']][f['y']] = FOOD
+
+    my_snake = json_data['you']
+
+    avoid = []
+    for rownum, row in enumerate(grid):
+        for colnum, value in enumerate(row):
+            if value is SNAKE:
+                avoid.append((rownum, colnum))
+
+    return my_snake, grid, avoid
 
 
 @bottle.route('/')
@@ -101,58 +111,140 @@ def start():
     return start_response()
 
 
+'''
 # DATA OBJECT
-# {
-#     "game": "hairy-cheese",
-#     "mode": "advanced",
-#     "turn": 4,
-#     "height": 20,
-#     "width": 30,
-#     "snakes": [
-#         <Snake Object>, <Snake Object>, ...
-#     ],
-#     "food": [
-#         [1, 2], [9, 3], ...
-#     ],
-#     "walls": [    // Advanced Only
-#         [2, 2]
-#     ],
-#     "gold": [     // Advanced Only
-#         [5, 5]
-#     ]
-# }
+{
+    "board": {
+                "food": 
+                [
+                    {"x": 0, "y": 6}, 
+                    {"x": 3, "y": 1}, 
+                    {"x": 11, "y": 5}, 
+                    {"x": 5, "y": 10}, 
+                    {"x": 14, "y": 16}, 
+                    {"x": 15, "y": 13}, 
+                    {"x": 16, "y": 8}
+                    ]
+                , 
+                "height": 19
+                , 
+                "snakes": 
+                [
+                    {"body": 
+                        [
+                        {"x": 1, "y": 1}, 
+                        {"x": 1, "y": 1}, 
+                        {"x": 1, "y": 1}
+                        ]
+                        , 
+                        "name": "sagargandhi33 / professor-severus-snake", 
+                        "id": "gs_QK8x4j4hcCxKyv6Xv9BrXYv8", 
+                        "health": 100}
+                    , 
+                    {"body": 
+                    [
+                        {"x": 17, "y": 17}, 
+                        {"x": 17, "y": 17}, 
+                        {"x": 17, "y": 17}
+                        ], 
+                        "name": "LiyaniL / Habushu", 
+                        "id": "gs_MWBSxvFmBqQfqQpRpBrcdftW", 
+                        "health": 100}
+                    , 
+                    {"body": 
+                        [
+                        {"x": 1, "y": 17}, 
+                        {"x": 1, "y": 17}, 
+                        {"x": 1, "y": 17}
+                        ], 
+                        "name": "JerryKott / Multiplicity", 
+                        "id": "gs_tbYcW9MH9wSjcRdwc6THPWGX", 
+                        "health": 100}
+                    , 
+                    {"body": 
+                        [
+                        {"x": 17, "y": 1}, 
+                        {"x": 17, "y": 1}, 
+                        {"x": 17, "y": 1}
+                        ], 
+                        "name": "zjt / zjt", 
+                        "id": "gs_8H9hTVBv6TYd8FfXKr6gR6R4", 
+                        "health": 100}
+                    , 
+                    {"body": 
+                        [
+                        {"x": 9, "y": 1}, 
+                        {"x": 9, "y": 1}, 
+                        {"x": 9, "y": 1}
+                        ], 
+                        "name": "vitterso / PopsVakt", 
+                        "id": "gs_3vyBm9RMjW38v7mgjd7CvjwV", 
+                        "health": 100}
+                    , 
+                    {"body": 
+                        [
+                        {"x": 17, "y": 9}, 
+                        {"x": 17, "y": 9}, 
+                        {"x": 17, "y": 9}
+                        ], 
+                        "name": "num46664 / sillysnake", 
+                        "id": "gs_FKhg9GyhBk6jGK3w8F8ggWVS", 
+                        "health": 100}
+                    , 
+                    {"body": 
+                        [
+                        {"x": 9, "y": 17}, 
+                        {"x": 9, "y": 17}, 
+                        {"x": 9, "y": 17}
+                        ], 
+                        "name": "ACHultman / Fer-de-lance", 
+                        "id": "gs_YbHFSjy4VdvxmqykRqV79GGB", 
+                        "health": 100}
+                    ]
+                    , 
+                    "width": 19
+                    }, 
+                    "game": 
+                        {
+                        "id": "494d6962-b227-4bf9-aa5c-a72bca7d64fe"
+                        }, 
+                        "turn": 0, 
+                        "you": 
+                            {"body": 
+                            [
+                            {"x": 9, "y": 17}, 
+                            {"x": 9, "y": 17}, 
+                            {"x": 9, "y": 17}
+                            ], 
+                            "name": "ACHultman / Fer-de-lance", 
+                            "id": "gs_YbHFSjy4VdvxmqykRqV79GGB", 
+                            "health": 100
+                            }
+    }
 
-# SNAKE
-# {
-#     "id": "1234-567890-123456-7890",
-#     "name": "Well Documented Snake",
-#     "status": "alive",
-#     "message": "Moved north",
-#     "taunt": "Let's rock!",
-#     "age": 56,
-#     "health": 83,
-#     "coords": [ [1, 1], [1, 2], [2, 2] ],
-#     "kills": 4,
-#     "food": 12,
-#     "gold": 2
-# }
+'''
+
 
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-    snek, grid = init(data)
+    snake, grid, avoid = init(data)
 
-    snake_head = snek['coords'][0]
-    snake_coords = snek['coords']
+    json_data = json.load(data)
+    json_data_board = json_data['board']
+
+    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
+    # snake_coords = snake['body']
     path = None
-    tentative_path = AStarGraph(snake_coords)
+    tentative_path = AStarGraph(avoid)
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    foods = sorted(data['food'], key=lambda p: closest(p, snake_head))
+    foods = sorted(json_data_board['food'], key=lambda p: closest(p, snake_head))
 
     for food in foods:
+        food_coords = (food['x'], food['y'])
         # print food
-        path = AStarSearch(snake_head, food, grid)
+        path = tentative_path.AStarSearch(snake_head, food_coords, grid)
         if not path:
             # print "no path to food"
             continue
@@ -161,10 +253,10 @@ def move():
         # snek_length = len(snake_coords) + 1
 
         in_trouble = False
-        for enemy in data['snakes']:
+        for enemy in json_data_board['snakes']:
             if enemy['name'] == NAME:
                 continue
-            if path_length > distance(enemy['coords'][0], food):
+            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), food_coords):
                 in_trouble = True
         if in_trouble:
             continue
