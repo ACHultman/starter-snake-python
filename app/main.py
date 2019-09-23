@@ -16,8 +16,8 @@ def distance(p, q):
     """
     Helper function for finding Manhattan distance between two cartesian points.
     """
-    dx = abs(p[0] - q[0])
-    dy = abs(p[1] - q[1])
+    dx = abs(int(p[0]) - q[0])
+    dy = abs(int(p[1]) - q[1])
     return dx + dy
 
 
