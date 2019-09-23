@@ -234,7 +234,7 @@ def move():
     snake_head = (int(snake['body'][0]['x']), int(snake['body'][0]['y']))
     # snake_coords = snake['body']
     path = None
-    tentative_path = AStarGraph(avoid)
+    grid_astar = AStarGraph(avoid)
     foods = []
     for food in data['board']['food']:
         x = food['x']
@@ -248,7 +248,7 @@ def move():
     for food in foods:
         food_coords = ((foods[0]), foods[1])
         # print food
-        path = AStarSearch(snake_head, food_coords, grid, avoid)
+        path = AStarSearch(snake_head, food_coords, grid_astar, avoid)
         if not path:
             # print "no path to food"
             continue
