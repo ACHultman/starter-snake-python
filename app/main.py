@@ -248,7 +248,7 @@ def move():
     for food in foods:
         food_coords = ((foods[0]), foods[1])
         # print food
-        path = tentative_path.AStarSearch(snake_head, food_coords, grid)
+        path = AStarSearch(snake_head, food_coords, grid, avoid)
         if not path:
             # print "no path to food"
             continue
