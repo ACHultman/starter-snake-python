@@ -2,7 +2,12 @@ import json
 import os
 
 import bottle
+<<<<<<< HEAD
 from astar import *
+=======
+
+from a_star import *
+>>>>>>> 8f637452f6d8e17ed277cf19a109de9a739541d7
 from api import ping_response, start_response, end_response, move_response
 
 SNEK_BUFFER = 3
@@ -42,7 +47,7 @@ def init(data):
     """
     Function for initializing the board.
     """
-
+    mysnake = None
     grid = [[0 for col in xrange(data['height'])] for row in xrange(data['width'])]
     for snek in data['snakes']:
         if snek['name'] == NAME:  # finds own snake
@@ -149,6 +154,14 @@ def move():
     #middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(data['food'], key=lambda p: closest(p, snake_head))
+=======
+    snek_head = snek['coords'][0]
+    snek_coords = snek['coords']
+    path = None
+    tentative_path = None
+    middle = [data['width'] / 2, data['height'] / 2]
+    foods = sorted(data['food'], key=lambda p: distance(p, middle))
+>>>>>>> 8f637452f6d8e17ed277cf19a109de9a739541d7
 
     for food in foods:
         # print food
@@ -160,6 +173,7 @@ def move():
         path_length = len(path)
         # snek_length = len(snake_coords) + 1
 
+<<<<<<< HEAD
         in_trouble = False
         for enemy in data['snakes']:
             if enemy['name'] == NAME:
@@ -170,6 +184,9 @@ def move():
             continue
 
     return move_response(path[0])
+=======
+    return move_response(direction(tentative_path[0], tentative_path[1]))
+>>>>>>> 8f637452f6d8e17ed277cf19a109de9a739541d7
 
 
 @bottle.post('/end')
