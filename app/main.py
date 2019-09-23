@@ -237,7 +237,7 @@ def move():
     tentative_path = AStarGraph(avoid)
     foods = []
     for food in data['board']['food']:
-        for x, y in food:
+        for x, y in food.values():
             foods.append((x, y))
 
     # middle = [data['width'] / 2, data['height'] / 2]
