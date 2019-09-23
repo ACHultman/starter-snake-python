@@ -146,7 +146,7 @@ def move():
     snake_coords = snek['coords']
     path = None
     tentative_path = AStarGraph(snake_coords)
-    #middle = [data['width'] / 2, data['height'] / 2]
+    # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(data['food'], key=lambda p: closest(p, snake_head))
 
@@ -168,8 +168,19 @@ def move():
                 in_trouble = True
         if in_trouble:
             continue
-    print(json.dumps(data))
-    print(path)
+
+    for element in path:
+        if element is (1, 0):
+            path[element] = "right"
+        elif element is (-1, 0):
+            path[element] = "left"
+        elif element is (0, 1):
+            path[element] = "up"
+        elif element is (0, -1):
+            path[element] = "down"
+        else:
+            break
+
     return move_response(path[0])
 
 
