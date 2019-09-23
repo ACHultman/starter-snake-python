@@ -235,12 +235,17 @@ def move():
     # snake_coords = snake['body']
     path = None
     tentative_path = AStarGraph(avoid)
+    foods = []
+    for food in data['board']['food']:
+        for x, y in food:
+            foods.append((x, y))
+
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    foods = sorted(json_data_board['food'], key=lambda p: closest(p, snake_head))
+    foods = sorted(foods, key=lambda p: distance(p, snake_head))
 
     for food in foods:
-        food_coords = (int(food['x']), int(food['y']))
+        food_coords = ((foods[0]), foods[1])
         # print food
         path = tentative_path.AStarSearch(snake_head, food_coords, grid)
         if not path:
