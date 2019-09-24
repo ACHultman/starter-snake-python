@@ -81,4 +81,4 @@ def AStarSearch(start, end, graph, barriers):
             H = graph.heuristic(neighbour, end)
             F[neighbour] = G[neighbour] + H
 
-    raise RuntimeError("A* failed to find a solution for start: " + start + ", end: " + end + ", graph: " + graph + ", barriers: " + barriers)
+    raise RuntimeError("A* failed to find a solution for start: " + str(start) + ", end: " + str(end) + ", graph: " + str(graph) + ", barriers: " + str(barriers))
