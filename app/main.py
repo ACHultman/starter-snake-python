@@ -66,7 +66,7 @@ def init(data):
     height = json_data_board['height']
     you = data['you']  # Dictionary for own snake
 
-    grid = [[1 for col in xrange(height + 1)] for row in xrange(height)]  # initialize 2d grid
+    grid = [[1 for col in xrange(height)] for row in xrange(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
         if snake is not you:
             for coord in snake['body']:
@@ -250,7 +250,7 @@ def move():
 
     json_data_board = data['board']
 
-    snake_head = (int(snake['body'][0]['x']), int(snake['body'][0]['y']))  # Coordinates for own snake's head
+    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
     path = None
     source = astar_grid.node(snake_head[0], snake_head[1])
 

@@ -2,17 +2,35 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-matrix = [
-  [1, 1, 1],
-  [1, 0, 1],
-  [1, 1, 1]
-]
+snake = {
+      "id":"gs_3D4KXWHKWVcjHdw6wbv7Rg3T",
+      "name":"ACHultman / Fer-de-lance",
+      "body":[
+         {
+            "x":1,
+            "y":5
+         },
+         {
+            "x":1,
+            "y":5
+         },
+         {
+            "x":1,
+            "y":5
+         }
+      ],
+      "health":100
+   }
+
+snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
+
+matrix = [[1 for col in xrange(12)] for row in xrange(11)]
 grid = Grid(matrix=matrix)
 
-start = grid.node(0, 0)
-end = grid.node(2, 2)
+start = grid.node(snake_head[0], snake_head[1])
+end = grid.node(2, 6)
 
-finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+finder = AStarFinder()
 path, runs = finder.find_path(start, end, grid)
 
 print('operations:', runs, 'path length:', len(path))
