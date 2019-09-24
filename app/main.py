@@ -44,25 +44,28 @@ def init(data):
     """
     json_data_board = data['board']
     height = json_data_board['height']
+    you = data['you']  # Dictionary for own snake
 
-    grid = [[0 for col in xrange(height + 1)] for row in xrange(height)]
+    grid = [[0 for col in xrange(height + 1)] for row in xrange(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
+        if snake is not you:
+            for coord in snake['body']:
+                grid[coord['x']][coord['y']] = SNAKE  # Documents other snake's bodies for later evasion.
+        else:
+            next(snake['body'])  # Skips adding own snake's head to snake body grid.
+            for coord in snake['body']:
+                grid[coord['x']][coord['y']] = SNAKE
 
-        for coord in snake['body']:
-            grid[coord['x']][coord['y']] = SNAKE
-
-    for f in json_data_board['food']:
+    for f in json_data_board['food']:  # For loop for marking all food on grid.
         grid[f['x']][f['y']] = FOOD
 
-    my_snake = data['you']
-
-    avoid = []
+    avoid = []  # List of tuple coordinates for astar barriers.
     for rownum, row in enumerate(grid):
         for colnum, value in enumerate(row):
             if value is SNAKE:
                 avoid.append((rownum, colnum))
 
-    return my_snake, grid, avoid
+    return you, grid, avoid
 
 
 @bottle.route('/')
@@ -231,11 +234,12 @@ def move():
 
     json_data_board = data['board']
 
-    snake_head = (int(snake['body'][0]['x']), int(snake['body'][0]['y']))
+    snake_head = (int(snake['body'][0]['x']), int(snake['body'][0]['y']))  # Coordinates for own snake's head
     # snake_coords = snake['body']
     path = None
-    grid_astar = AStarGraph(avoid)
-    foods = []
+    grid_astar = AStarGraph(avoid)  # AStar grid initialization
+
+    foods = []  # Tuple list of food coordinates
     for food in data['board']['food']:
         x = food['x']
         y = food['y']
@@ -243,7 +247,7 @@ def move():
 
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    foods = sorted(foods, key=lambda p: distance(p, snake_head))
+    foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
 
     for food in foods:
         close_food = food
