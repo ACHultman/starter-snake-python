@@ -2,14 +2,14 @@ import json
 import os
 
 import bottle
-from astar import *
 from api import ping_response, start_response, end_response, move_response
 
-SNEK_BUFFER = 3
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+
 NAME = "ACHultman / Fer-de-lance"
-SNAKE = 1
-FOOD = 3
-SAFETY = 5
+SNAKE = -1
+FOOD = 2
 
 
 def distance(p, q):
@@ -38,6 +38,26 @@ def closest(items, ref):
     return closest_item
 
 
+def direction(path):
+    """
+    :param path:
+    :return: "up", "down", "left", or "right"
+    """
+    x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
+    y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
+
+    if x_delta is 1:
+        return "right"
+    elif x_delta is -1:
+        return "left"
+    elif y_delta is -1:
+        return "up"
+    elif y_delta is 1:
+        return "down"
+    else:
+        raise RuntimeError('No return direction found in direction(path) where path = ' + str(path))
+
+
 def init(data):
     """
     Function for initializing the board.
@@ -46,7 +66,7 @@ def init(data):
     height = json_data_board['height']
     you = data['you']  # Dictionary for own snake
 
-    grid = [[0 for col in xrange(height + 1)] for row in xrange(height)]  # initialize 2d grid
+    grid = [[1 for col in xrange(height + 1)] for row in xrange(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
         if snake is not you:
             for coord in snake['body']:
@@ -59,13 +79,9 @@ def init(data):
     for f in json_data_board['food']:  # For loop for marking all food on grid.
         grid[f['x']][f['y']] = FOOD
 
-    avoid = []  # List of tuple coordinates for astar barriers.
-    for rownum, row in enumerate(grid):
-        for colnum, value in enumerate(row):
-            if value is SNAKE:
-                avoid.append((rownum, colnum))
+    astar_grid = Grid(grid)
 
-    return you, grid, avoid
+    return you, grid, astar_grid
 
 
 @bottle.route('/')
@@ -230,14 +246,13 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-    snake, grid, avoid = init(data)
+    snake, grid, astar_grid = init(data)
 
     json_data_board = data['board']
 
     snake_head = (int(snake['body'][0]['x']), int(snake['body'][0]['y']))  # Coordinates for own snake's head
-    # snake_coords = snake['body']
     path = None
-    grid_astar = AStarGraph(avoid)  # AStar grid initialization
+    source = astar_grid.node(snake_head[0], snake_head[1])
 
     foods = []  # Tuple list of food coordinates
     for food in data['board']['food']:
@@ -250,9 +265,9 @@ def move():
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
 
     for food in foods:
-        close_food = food
-        # print food
-        path = AStarSearch(snake_head, close_food, grid_astar, avoid)
+        target = astar_grid.node(food[0], food[1])
+        finder = AStarFinder()  # Initialize AStarFinder
+        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
         if not path:
             # print "no path to food"
             continue
@@ -264,28 +279,16 @@ def move():
         for enemy in json_data_board['snakes']:
             if enemy['name'] == NAME:
                 continue
-            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), close_food):
+            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), food):
                 in_trouble = True
         if in_trouble:
             continue
     print(path)
 
-    for element in path:
-        if element is (1, 0):
-            path[element] = "right"
-        elif element is (-1, 0):
-            path[element] = "left"
-        elif element is (0, 1):
-            path[element] = "up"
-        elif element is (0, -1):
-            path[element] = "down"
-        else:
-            break
-
     print(json.dumps(data))
     print(path)
 
-    return move_response(path[0])
+    return move_response(direction(path))
 
 
 @bottle.post('/end')
