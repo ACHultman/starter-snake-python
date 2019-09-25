@@ -266,17 +266,19 @@ def move():
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     target = None
     path = None
+    finder = AStarFinder()  # Initialize AStarFinder
     for food in foods:
         target = astar_grid.node(food[0], food[1])
-        finder = AStarFinder()  # Initialize AStarFinder
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to food
         if not path:  # If no food or not path to food
-            target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
-            path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
             # print "no path to food"
             continue
         else:
             break
+
+    target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
+    path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
+
     path_length = len(path)
 
     print(np.matrix(grid))
