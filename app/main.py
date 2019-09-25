@@ -249,13 +249,11 @@ def move():
     data = bottle.request.json
     snake, grid, astar_grid = init(data)
 
-    if data['turn'] is 0:
-        return move_response("right")
     json_data_board = data['board']
 
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
     path = None
-    source = astar_grid.node(snake_head[0], snake_head[1])
+    source = astar_grid.node(snake_head[1], snake_head[0])
 
     foods = []  # Tuple list of food coordinates
     for food in data['board']['food']:
@@ -268,7 +266,7 @@ def move():
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
 
     for food in foods:
-        target = astar_grid.node(food[0], food[1])
+        target = astar_grid.node(food[1], food[0])
         finder = AStarFinder()  # Initialize AStarFinder
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
         if not path:

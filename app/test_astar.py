@@ -1,26 +1,26 @@
-from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
 snake = {
-      "id":"gs_3D4KXWHKWVcjHdw6wbv7Rg3T",
-      "name":"ACHultman / Fer-de-lance",
-      "body":[
-         {
-            "x":1,
-            "y":5
-         },
-         {
-            "x":1,
-            "y":5
-         },
-         {
-            "x":1,
-            "y":5
-         }
-      ],
-      "health":100
-   }
+    "id": "gs_3D4KXWHKWVcjHdw6wbv7Rg3T",
+    "name": "ACHultman / Fer-de-lance",
+    "body": [
+        {
+            "x": 1,
+            "y": 5
+
+        },
+        {
+            "x": 1,
+            "y": 5
+        },
+        {
+            "x": 1,
+            "y": 5
+        }
+    ],
+    "health": 100
+}
 
 snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
 

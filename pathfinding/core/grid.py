@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from .node import Node
+
 try:
     import numpy as np
+
     USE_NUMPY = True
 except ImportError:
     USE_NUMPY = False
@@ -16,7 +18,7 @@ def build_nodes(width, height, matrix=None, inverse=False):
     """
     nodes = []
     use_matrix = (isinstance(matrix, (tuple, list))) or \
-        (USE_NUMPY and isinstance(matrix, np.ndarray) and matrix.size > 0)
+                 (USE_NUMPY and isinstance(matrix, np.ndarray) and matrix.size > 0)
 
     for y in range(height):
         nodes.append([])
@@ -56,7 +58,12 @@ class Grid(object):
         :param y: y pos
         :return:
         """
-        return self.nodes[y][x]
+        try:
+            node = self.nodes[y][x]
+        except:
+            print("Could not make new node at x: " + x + " y: " + y)
+
+        return node
 
     def inside(self, x, y):
         """
@@ -76,6 +83,7 @@ class Grid(object):
     def neighbors(self, node, diagonal_movement=DiagonalMovement.never):
         """
         get all neighbors of one node
+        :param diagonal_movement:
         :param node: node
         """
         x = node.x
@@ -161,7 +169,7 @@ class Grid(object):
         """
         data = ''
         if border:
-            data = '+{}+'.format('-'*len(self.nodes[0]))
+            data = '+{}+'.format('-' * len(self.nodes[0]))
         for y in range(len(self.nodes)):
             line = ''
             for x in range(len(self.nodes[y])):
@@ -179,10 +187,10 @@ class Grid(object):
                 else:
                     line += block_chr  # blocked field
             if border:
-                line = '|'+line+'|'
+                line = '|' + line + '|'
             if data:
                 data += '\n'
             data += line
         if border:
-            data += '\n+{}+'.format('-'*len(self.nodes[0]))
+            data += '\n+{}+'.format('-' * len(self.nodes[0]))
         return data
