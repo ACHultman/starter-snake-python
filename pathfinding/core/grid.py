@@ -63,7 +63,7 @@ class Grid(object):
         try:
             node = self.nodes[y][x]
         except IndexError:
-            print("Could not make new node at x: " + str(x) + " y: " + str(y))
+            AssertionError("Could not make new node at x: " + str(x) + " y: " + str(y))
 
         return node
 
