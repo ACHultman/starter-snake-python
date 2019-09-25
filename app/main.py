@@ -79,7 +79,7 @@ def init(data):
     for f in json_data_board['food']:  # For loop for marking all food on grid.
         grid[f['x']][f['y']] = FOOD
 
-    astar_grid = Grid(grid)
+    astar_grid = Grid(matrix=grid)
 
     return you, grid, astar_grid
 
@@ -251,7 +251,6 @@ def move():
     json_data_board = data['board']
 
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
-    path = None
     source = astar_grid.node(snake_head[0], snake_head[1])
 
     foods = []  # Tuple list of food coordinates
@@ -263,7 +262,8 @@ def move():
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
-
+    target = None
+    path = None
     for food in foods:
         target = astar_grid.node(food[0], food[1])
         finder = AStarFinder()  # Initialize AStarFinder
@@ -271,10 +271,12 @@ def move():
         if not path:
             # print "no path to food"
             continue
-
-        path_length = len(path)
+        else:
+            break
+    path_length = len(path)
+    print(path)
         # snek_length = len(snake_coords) + 1
-
+    '''
         in_trouble = False
         for enemy in json_data_board['snakes']:
             if enemy['name'] == NAME:
@@ -283,10 +285,7 @@ def move():
                 in_trouble = True
         if in_trouble:
             continue
-    print(path)
-
-    print(json.dumps(data))
-    print(path)
+    '''
 
     return move_response(direction(path))
 

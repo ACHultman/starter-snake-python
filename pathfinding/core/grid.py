@@ -46,6 +46,8 @@ class Grid(object):
                 matrix.size > 0):
             self.height = len(matrix)
             self.width = self.width = len(matrix[0]) if self.height > 0 else 0
+        print("Width" + str(self.width))
+        print("Height" + str(self.height))
         if self.width > 0 and self.height > 0:
             self.nodes = build_nodes(self.width, self.height, matrix, inverse)
         else:
