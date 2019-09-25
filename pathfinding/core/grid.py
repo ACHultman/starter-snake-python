@@ -58,9 +58,11 @@ class Grid(object):
         :param y: y pos
         :return:
         """
+        node = None
+
         try:
             node = self.nodes[y][x]
-        except:
+        except IndexError:
             print("Could not make new node at x: " + str(x) + " y: " + str(y))
 
         return node
