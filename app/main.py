@@ -270,8 +270,8 @@ def move():
         target = astar_grid.node(food[0], food[1])
         finder = AStarFinder()  # Initialize AStarFinder
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to food
-        if not path:
-            target = astar_grid.node(snake_tail[0], snake_tail[1])
+        if not path:  # If no food or not path to food
+            target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
             path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
             # print "no path to food"
             continue
