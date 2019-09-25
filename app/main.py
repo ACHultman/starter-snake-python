@@ -7,7 +7,6 @@ from api import ping_response, start_response, end_response, move_response
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-first_turn = True
 NAME = "ACHultman / Fer-de-lance"
 SNAKE = -1
 FOOD = 2
