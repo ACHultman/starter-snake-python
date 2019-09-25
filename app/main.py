@@ -275,9 +275,9 @@ def move():
             continue
         else:
             break
-
-    target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
-    path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
+    if not path:
+        target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
 
     path_length = len(path)
 
