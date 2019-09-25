@@ -7,6 +7,7 @@ from api import ping_response, start_response, end_response, move_response
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
+first_turn = True
 NAME = "ACHultman / Fer-de-lance"
 SNAKE = -1
 FOOD = 2
@@ -248,6 +249,8 @@ def move():
     data = bottle.request.json
     snake, grid, astar_grid = init(data)
 
+    if data['turn'] is 0:
+        return move_response("right")
     json_data_board = data['board']
 
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
