@@ -58,13 +58,10 @@ class Grid(object):
         :param y: y pos
         :return:
         """
-        node = None
 
-        try:
-            node = self.nodes[y][x]
-        except IndexError:
-            AssertionError("Could not make new node at x: " + str(x) + " y: " + str(y))
+        IndexError("Could not make new node at x: " + str(x) + " y: " + str(y))
 
+        node = self.nodes[y][x]
         return node
 
     def inside(self, x, y):
