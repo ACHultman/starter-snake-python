@@ -59,7 +59,7 @@ class Grid(object):
         :return:
         """
 
-        IndexError("Could not make new node at x: " + str(x) + " y: " + str(y))
+        raise IndexError("Could not make new node at x: " + str(x) + " y: " + str(y))
 
         node = self.nodes[y][x]
         return node
