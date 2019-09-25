@@ -71,14 +71,14 @@ def init(data):
     for snake in json_data_board['snakes']:
         if snake is not you:
             for coord in snake['body']:
-                grid[coord['x']][coord['y']] = SNAKE  # Documents other snake's bodies for later evasion.
+                grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
         else:
             next(snake['body'])  # Skips adding own snake's head to snake body grid.
             for coord in snake['body']:
-                grid[coord['x']][coord['y']] = SNAKE
+                grid[coord['y']][coord['x']] = SNAKE
 
-    for f in json_data_board['food']:  # For loop for marking all food on grid.
-        grid[f['x']][f['y']] = FOOD
+    for food in json_data_board['food']:  # For loop for marking all food on grid.
+        grid[food['y']][food['x']] = FOOD
 
     astar_grid = Grid(matrix=grid)
 

@@ -59,7 +59,7 @@ data = \
             "snakes": [
                 {
                     "health": 100,
-                    "id": "gs_mMY9hdprHBV48ctTRDdrtmgc",
+                    "id": "gs_c8yh3Tf46hkvKG7TchrBkFj3",
                     "body": [
                         {
                             "y": 1,
@@ -74,11 +74,11 @@ data = \
                             "x": 1
                         }
                     ],
-                    "name": "matthewlehner / The Undersnaker"
+                    "name": "ruqaiya / fassst"
                 },
                 {
                     "health": 100,
-                    "id": "gs_PDTjdcj6DM7tGkpThcQcBVVR",
+                    "id": "gs_Bfv7CPym9Dy7Cm694SKgWhX3",
                     "body": [
                         {
                             "y": 9,
@@ -93,11 +93,11 @@ data = \
                             "x": 9
                         }
                     ],
-                    "name": "neovas / hissin-bastid"
+                    "name": "dmoneyUK / JDSnake"
                 },
                 {
                     "health": 100,
-                    "id": "gs_YDJqpqwYhg3xDc8RHQ8FjFDR",
+                    "id": "gs_CSpYdFvRWvKSHgjYF6b3J6SB",
                     "body": [
                         {
                             "y": 9,
@@ -112,11 +112,11 @@ data = \
                             "x": 1
                         }
                     ],
-                    "name": "avery-hightechu-ca / sneakysnek"
+                    "name": "noalbalint / qwertyman1"
                 },
                 {
                     "health": 100,
-                    "id": "gs_9qtV6mgYcvfCpb4HFkxww3P7",
+                    "id": "gs_FHjMJSxDHpjMkBbPm4WT7RpY",
                     "body": [
                         {
                             "y": 1,
@@ -131,11 +131,11 @@ data = \
                             "x": 9
                         }
                     ],
-                    "name": "tykodey / Snak Snek"
+                    "name": "geekforbrains / Outlander"
                 },
                 {
                     "health": 100,
-                    "id": "gs_K8CFr9RW3QxtDgvSghQFbQDJ",
+                    "id": "gs_x9GPq4GSp6J3J8bRBMcF9mx3",
                     "body": [
                         {
                             "y": 1,
@@ -150,11 +150,11 @@ data = \
                             "x": 5
                         }
                     ],
-                    "name": "jperkinz / YeetSnek"
+                    "name": "zjt / zjt"
                 },
                 {
                     "health": 100,
-                    "id": "gs_BKj77SV9S8Y46pFRP676SV4T",
+                    "id": "gs_dtTS6kT8xbwyx6b9JX9WVytC",
                     "body": [
                         {
                             "y": 5,
@@ -167,6 +167,44 @@ data = \
                         {
                             "y": 5,
                             "x": 9
+                        }
+                    ],
+                    "name": "adriaanwm / dontdie"
+                },
+                {
+                    "health": 100,
+                    "id": "gs_TfDW6rTkXGqqcG9wQy8PcJxD",
+                    "body": [
+                        {
+                            "y": 9,
+                            "x": 5
+                        },
+                        {
+                            "y": 9,
+                            "x": 5
+                        },
+                        {
+                            "y": 9,
+                            "x": 5
+                        }
+                    ],
+                    "name": "colemacdonald / this-is-the-real-snake"
+                },
+                {
+                    "health": 100,
+                    "id": "gs_6HxcWB7v4wfKgFXjQ88wQpKd",
+                    "body": [
+                        {
+                            "y": 5,
+                            "x": 1
+                        },
+                        {
+                            "y": 5,
+                            "x": 1
+                        },
+                        {
+                            "y": 5,
+                            "x": 1
                         }
                     ],
                     "name": "ACHultman / Fer-de-lance"
@@ -175,51 +213,59 @@ data = \
             "height": 11,
             "food": [
                 {
-                    "y": 8,
-                    "x": 0
-                },
-                {
-                    "y": 6,
-                    "x": 0
-                },
-                {
-                    "y": 3,
-                    "x": 0
-                },
-                {
                     "y": 4,
-                    "x": 5
-                },
-                {
-                    "y": 1,
                     "x": 0
                 },
                 {
                     "y": 0,
-                    "x": 0
+                    "x": 4
+                },
+                {
+                    "y": 3,
+                    "x": 4
+                },
+                {
+                    "y": 10,
+                    "x": 7
+                },
+                {
+                    "y": 7,
+                    "x": 10
+                },
+                {
+                    "y": 6,
+                    "x": 2
+                },
+                {
+                    "y": 0,
+                    "x": 8
+                },
+                {
+                    "y": 1,
+                    "x": 7
                 }
             ],
             "width": 11
         },
         "turn": 0,
         "game": {
-            "id": "237fc32a-5444-4e20-925e-84599b84fa32"
+            "id": "0d8d77e7-cb7e-446d-89f6-3bab7a3f4e2e"
         },
         "you": {
             "health": 100,
-            "id": "gs_BKj77SV9S8Y46pFRP676SV4T",
+            "id": "gs_6HxcWB7v4wfKgFXjQ88wQpKd",
             "body": [
                 {
                     "y": 5,
-                    "x": 9
+                    "x": 1
                 },
                 {
                     "y": 5,
-                    "x": 9
+                    "x": 1
                 },
                 {
                     "y": 5,
-                    "x": 9
+                    "x": 1
                 }
             ],
             "name": "ACHultman / Fer-de-lance"
@@ -256,8 +302,8 @@ def init(datas):
             for coord in snake['body']:
                 grid[coord['x']][coord['y']] = SNAKE
 
-    for f in json_data_board['food']:  # For loop for marking all food on grid.
-        grid[f['x']][f['y']] = FOOD
+    for food in json_data_board['food']:  # For loop for marking all food on grid.
+        grid[food['y']][food['x']] = FOOD
 
     astar_grid = Grid(matrix=grid)
 
@@ -266,7 +312,7 @@ def init(datas):
 
 def move():
     snake, grid, astar_grid = init(data)
-
+    print(np.matrix(grid))
     json_data_board = data['board']
 
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
