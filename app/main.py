@@ -1,5 +1,6 @@
 import json
 import os
+import numpy as np
 
 import bottle
 from api import ping_response, start_response, end_response, move_response
@@ -274,6 +275,7 @@ def move():
         else:
             break
     path_length = len(path)
+    print(np.matrix(grid))
     print(path)
         # snek_length = len(snake_coords) + 1
     '''
