@@ -3,6 +3,7 @@ from pathfinding.finder.a_star import AStarFinder
 import numpy as np
 
 NAME = "ACHultman / Fer-de-lance"
+WALKABLE = 1
 SNAKE = -1
 FOOD = 2
 
@@ -55,220 +56,148 @@ def direction(path):
 
 data = \
     {
-        "board": {
-            "snakes": [
+
+        'you': {
+            'body': [
                 {
-                    "health": 100,
-                    "id": "gs_c8yh3Tf46hkvKG7TchrBkFj3",
-                    "body": [
-                        {
-                            "y": 1,
-                            "x": 1
-                        },
-                        {
-                            "y": 1,
-                            "x": 1
-                        },
-                        {
-                            "y": 1,
-                            "x": 1
-                        }
-                    ],
-                    "name": "ruqaiya / fassst"
+                    'y': 10,
+                    'x': 10
                 },
                 {
-                    "health": 100,
-                    "id": "gs_Bfv7CPym9Dy7Cm694SKgWhX3",
-                    "body": [
-                        {
-                            "y": 9,
-                            "x": 9
-                        },
-                        {
-                            "y": 9,
-                            "x": 9
-                        },
-                        {
-                            "y": 9,
-                            "x": 9
-                        }
-                    ],
-                    "name": "dmoneyUK / JDSnake"
+                    'y': 9,
+                    'x': 10
                 },
                 {
-                    "health": 100,
-                    "id": "gs_CSpYdFvRWvKSHgjYF6b3J6SB",
-                    "body": [
-                        {
-                            "y": 9,
-                            "x": 1
-                        },
-                        {
-                            "y": 9,
-                            "x": 1
-                        },
-                        {
-                            "y": 9,
-                            "x": 1
-                        }
-                    ],
-                    "name": "noalbalint / qwertyman1"
+                    'y': 9,
+                    'x': 9
                 },
                 {
-                    "health": 100,
-                    "id": "gs_FHjMJSxDHpjMkBbPm4WT7RpY",
-                    "body": [
-                        {
-                            "y": 1,
-                            "x": 9
-                        },
-                        {
-                            "y": 1,
-                            "x": 9
-                        },
-                        {
-                            "y": 1,
-                            "x": 9
-                        }
-                    ],
-                    "name": "geekforbrains / Outlander"
+                    'y': 9,
+                    'x': 8
                 },
                 {
-                    "health": 100,
-                    "id": "gs_x9GPq4GSp6J3J8bRBMcF9mx3",
-                    "body": [
-                        {
-                            "y": 1,
-                            "x": 5
-                        },
-                        {
-                            "y": 1,
-                            "x": 5
-                        },
-                        {
-                            "y": 1,
-                            "x": 5
-                        }
-                    ],
-                    "name": "zjt / zjt"
+                    'y': 8,
+                    'x': 8
                 },
                 {
-                    "health": 100,
-                    "id": "gs_dtTS6kT8xbwyx6b9JX9WVytC",
-                    "body": [
-                        {
-                            "y": 5,
-                            "x": 9
-                        },
-                        {
-                            "y": 5,
-                            "x": 9
-                        },
-                        {
-                            "y": 5,
-                            "x": 9
-                        }
-                    ],
-                    "name": "adriaanwm / dontdie"
+                    'y': 7,
+                    'x': 8
                 },
                 {
-                    "health": 100,
-                    "id": "gs_TfDW6rTkXGqqcG9wQy8PcJxD",
-                    "body": [
-                        {
-                            "y": 9,
-                            "x": 5
-                        },
-                        {
-                            "y": 9,
-                            "x": 5
-                        },
-                        {
-                            "y": 9,
-                            "x": 5
-                        }
-                    ],
-                    "name": "colemacdonald / this-is-the-real-snake"
+                    'y': 6,
+                    'x': 8
                 },
                 {
-                    "health": 100,
-                    "id": "gs_6HxcWB7v4wfKgFXjQ88wQpKd",
-                    "body": [
-                        {
-                            "y": 5,
-                            "x": 1
-                        },
-                        {
-                            "y": 5,
-                            "x": 1
-                        },
-                        {
-                            "y": 5,
-                            "x": 1
-                        }
-                    ],
-                    "name": "ACHultman / Fer-de-lance"
+                    'y': 5,
+                    'x': 8
+                },
+                {
+                    'y': 4,
+                    'x': 8
+                },
+                {
+                    'y': 3,
+                    'x': 8
+                },
+                {
+                    'y': 3,
+                    'x': 7
+                },
+                {
+                    'y': 3,
+                    'x': 7
                 }
             ],
-            "height": 11,
-            "food": [
-                {
-                    "y": 4,
-                    "x": 0
-                },
-                {
-                    "y": 0,
-                    "x": 4
-                },
-                {
-                    "y": 3,
-                    "x": 4
-                },
-                {
-                    "y": 10,
-                    "x": 7
-                },
-                {
-                    "y": 7,
-                    "x": 10
-                },
-                {
-                    "y": 6,
-                    "x": 2
-                },
-                {
-                    "y": 0,
-                    "x": 8
-                },
-                {
-                    "y": 1,
-                    "x": 7
-                }
-            ],
-            "width": 11
+            'health': 100,
+            'id': 'gs_qtpgYWvxRP4QxDJJQKvybbKB',
+            'name': 'ACHultman / Fer-de-lance'
         },
-        "turn": 0,
-        "game": {
-            "id": "0d8d77e7-cb7e-446d-89f6-3bab7a3f4e2e"
+        'turn': 60,
+        'game': {
+            'id': 'b48b201e-bcbc-4689-bfdd-20cb893ed300'
         },
-        "you": {
-            "health": 100,
-            "id": "gs_6HxcWB7v4wfKgFXjQ88wQpKd",
-            "body": [
+        'board': {
+            'food': [
+
+            ],
+            'width': 11,
+            'snakes': [
                 {
-                    "y": 5,
-                    "x": 1
+                    'body': [
+                        {
+                            'y': 1,
+                            'x': 9
+                        },
+                        {
+                            'y': 1,
+                            'x': 8
+                        },
+                        {
+                            'y': 0,
+                            'x': 8
+                        }
+                    ],
+                    'health': 40,
+                    'id': 'gs_DxpxxhbGGjkqdTWDdKDRD6CY',
+                    'name': 'shoya4000 / Battlesnake-Hordes'
                 },
                 {
-                    "y": 5,
-                    "x": 1
-                },
-                {
-                    "y": 5,
-                    "x": 1
+                    'body': [
+                        {
+                            'y': 10,
+                            'x': 10
+                        },
+                        {
+                            'y': 9,
+                            'x': 10
+                        },
+                        {
+                            'y': 9,
+                            'x': 9
+                        },
+                        {
+                            'y': 9,
+                            'x': 8
+                        },
+                        {
+                            'y': 8,
+                            'x': 8
+                        },
+                        {
+                            'y': 7,
+                            'x': 8
+                        },
+                        {
+                            'y': 6,
+                            'x': 8
+                        },
+                        {
+                            'y': 5,
+                            'x': 8
+                        },
+                        {
+                            'y': 4,
+                            'x': 8
+                        },
+                        {
+                            'y': 3,
+                            'x': 8
+                        },
+                        {
+                            'y': 3,
+                            'x': 7
+                        },
+                        {
+                            'y': 3,
+                            'x': 7
+                        }
+                    ],
+                    'health': 100,
+                    'id': 'gs_qtpgYWvxRP4QxDJJQKvybbKB',
+                    'name': 'ACHultman / Fer-de-lance'
                 }
             ],
-            "name": "ACHultman / Fer-de-lance"
+            'height': 11
         }
     }
 '''
@@ -294,14 +223,19 @@ def init(datas):
     grid = [[1 for col in range(height)] for row in range(height)]
     print(np.matrix(grid))  # initialize 2d grid
     for snake in json_data_board['snakes']:
-        if snake is not you:
+        if snake['name'] is not you['name']:
             for coord in snake['body']:
-                grid[coord['x']][coord['y']] = SNAKE  # Documents other snake's bodies for later evasion.
+                grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
         else:
-            next(snake['body'])  # Skips adding own snake's head to snake body grid.
+            next(iter(snake['body']))  # Skips adding own snake's head to snake body grid.
+            tail_coord = None
+            print("Is there food? Answer: " + str(json_data_board['food']))
             for coord in snake['body']:
-                grid[coord['x']][coord['y']] = SNAKE
-
+                grid[coord['y']][coord['x']] = SNAKE
+                tail_coord = (coord['y'], coord['x'])
+            if not json_data_board['food']:
+                grid[tail_coord[0]][tail_coord[1]] = WALKABLE
+                print("Tail now walkable: y: " + str(tail_coord[0]) + " x: " + str(tail_coord[1]))
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
 

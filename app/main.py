@@ -9,6 +9,7 @@ from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
 NAME = "ACHultman / Fer-de-lance"
+WALKABLE = 1
 SNAKE = -1
 FOOD = 2
 
@@ -67,16 +68,19 @@ def init(data):
     height = json_data_board['height']
     you = data['you']  # Dictionary for own snake
 
-    grid = [[1 for col in xrange(height)] for row in xrange(height)]  # initialize 2d grid
+    grid = [[1 for col in range(height)] for row in range(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
-        if snake is not you:
+        if snake['name'] is not you['name']:
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
         else:
-            next(snake['body'])  # Skips adding own snake's head to snake body grid.
+            next(iter(snake['body']))  # Skips adding own snake's head to snake body grid.
+            tail_coord = None
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE
-
+                tail_coord = (coord['y'], coord['x'])
+            if not json_data_board['food']:
+                grid[tail_coord[0]][tail_coord[1]] = WALKABLE
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
 
@@ -282,8 +286,9 @@ def move():
 
     path_length = len(path)
 
-    print(np.matrix(grid))
+    print(astar_grid.grid_str(path=path, start=source, end=target))
     print(path)
+    print(direction(path))
     # snek_length = len(snake_coords) + 1
     '''
         in_trouble = False
