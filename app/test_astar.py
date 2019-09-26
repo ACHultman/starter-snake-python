@@ -56,115 +56,119 @@ def direction(path):
 
 data = \
     {
+        'turn': 17,
+        'game': {
+            'id': 'e8d7347a-4219-49b0-a9e0-e21ec89f9c80'
+        },
+        'you': {
+            'id': 'gs_YWJ43BxVgjRrWxQbVFMpv7qX',
+            'health': 100,
+            'name': 'ACHultman / Fer-de-lance',
+            'body': [
+                {
+                    'x': 10,
+                    'y': 9
+                },
+                {
+                    'x': 10,
+                    'y': 8
+                },
+                {
+                    'x': 10,
+                    'y': 7
+                },
+                {
+                    'x': 10,
+                    'y': 6
+                },
+                {
+                    'x': 9,
+                    'y': 6
+                },
+                {
+                    'x': 9,
+                    'y': 5
+                },
+                {
+                    'x': 9,
+                    'y': 5
+                }
+            ]
+        },
         'board': {
-            'food': [
-
-            ],
+            'height': 11,
             'snakes': [
                 {
+                    'id': 'gs_hpJXqPqytwv6TrkyTjKW67Hb',
+                    'health': 94,
                     'name': 'AhmedNSidd / Samaritan-2',
-                    'id': 'gs_TmM7jVFhgpWXqrJfgHRwkP7P',
-                    'health': 91,
                     'body': [
                         {
+                            'x': 8,
+                            'y': 9
+                        },
+                        {
+                            'x': 7,
+                            'y': 9
+                        },
+                        {
+                            'x': 6,
+                            'y': 9
+                        },
+                        {
+                            'x': 5,
+                            'y': 9
+                        },
+                        {
                             'x': 4,
-                            'y': 4
+                            'y': 9
                         },
                         {
-                            'x': 3,
-                            'y': 4
-                        },
-                        {
-                            'x': 2,
-                            'y': 4
-                        },
-                        {
-                            'x': 2,
-                            'y': 3
-                        },
-                        {
-                            'x': 2,
-                            'y': 2
+                            'x': 4,
+                            'y': 10
                         }
                     ]
                 },
                 {
+                    'id': 'gs_YWJ43BxVgjRrWxQbVFMpv7qX',
+                    'health': 100,
                     'name': 'ACHultman / Fer-de-lance',
-                    'id': 'gs_7FjSqbxBrDRjJwK4MBCDPwx7',
-                    'health': 98,
                     'body': [
                         {
-                            'x': 0,
+                            'x': 10,
+                            'y': 9
+                        },
+                        {
+                            'x': 10,
+                            'y': 8
+                        },
+                        {
+                            'x': 10,
+                            'y': 7
+                        },
+                        {
+                            'x': 10,
                             'y': 6
                         },
                         {
-                            'x': 1,
+                            'x': 9,
                             'y': 6
                         },
                         {
-                            'x': 2,
-                            'y': 6
-                        },
-                        {
-                            'x': 3,
-                            'y': 6
-                        },
-                        {
-                            'x': 3,
+                            'x': 9,
                             'y': 5
                         },
                         {
-                            'x': 4,
-                            'y': 5
-                        },
-                        {
-                            'x': 5,
+                            'x': 9,
                             'y': 5
                         }
                     ]
                 }
             ],
             'width': 11,
-            'height': 11
-        },
-        'you': {
-            'name': 'ACHultman / Fer-de-lance',
-            'id': 'gs_7FjSqbxBrDRjJwK4MBCDPwx7',
-            'health': 98,
-            'body': [
-                {
-                    'x': 0,
-                    'y': 6
-                },
-                {
-                    'x': 1,
-                    'y': 6
-                },
-                {
-                    'x': 2,
-                    'y': 6
-                },
-                {
-                    'x': 3,
-                    'y': 6
-                },
-                {
-                    'x': 3,
-                    'y': 5
-                },
-                {
-                    'x': 4,
-                    'y': 5
-                },
-                {
-                    'x': 5,
-                    'y': 5
-                }
+            'food': [
+
             ]
-        },
-        'turn': 26,
-        'game': {
-            'id': 'e8c1076e-a93d-4faf-a713-e6e9201ae81a'
         }
     }
 '''
@@ -196,7 +200,7 @@ def init(datas):
         else:
             next(iter(snake['body']))  # Skips adding own snake's head to snake body grid.
             tail_coord = None
-            print("Is there food? Answer: " + str(json_data_board['food']))
+            print("Is there food? Answer: " + str(not not json_data_board['food']))
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
@@ -213,7 +217,7 @@ def init(datas):
 
 def move():
     snake, grid, astar_grid = init(data)
-    print(np.matrix(grid))
+    print(np.array(grid))
     json_data_board = data['board']
 
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))

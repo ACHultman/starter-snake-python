@@ -68,8 +68,7 @@ def init(data):
     height = json_data_board['height']
     you = data['you']  # Dictionary for own snake
 
-    grid = [[1 for col in range(height)] for row in range(height)]
-    print(np.matrix(grid))  # initialize 2d grid
+    grid = [[1 for col in range(height)] for row in range(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
         if snake['name'] is not you['name']:
             for coord in snake['body']:
@@ -77,7 +76,7 @@ def init(data):
         else:
             next(iter(snake['body']))  # Skips adding own snake's head to snake body grid.
             tail_coord = None
-            print("Is there food? Answer: " + str(json_data_board['food']))
+            print("Is there food? Answer: " + str(not not json_data_board['food']))
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
@@ -254,9 +253,10 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-    print(str(data))
+    print(data)
     snake, grid, astar_grid = init(data)
-    print(np.matrix(grid))
+    print(np.array(grid))
+    json_data_board = data['board']
 
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
     print("nodes" + str(astar_grid.nodes))
@@ -292,6 +292,7 @@ def move():
         target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
         print("Path to tail:" + str(path))
+
 
     '''
         in_trouble = False
