@@ -68,7 +68,8 @@ def init(data):
     height = json_data_board['height']
     you = data['you']  # Dictionary for own snake
 
-    grid = [[1 for col in range(height)] for row in range(height)]  # initialize 2d grid
+    grid = [[1 for col in range(height)] for row in range(height)]
+    print(np.matrix(grid))  # initialize 2d grid
     for snake in json_data_board['snakes']:
         if snake['name'] is not you['name']:
             for coord in snake['body']:
@@ -76,11 +77,13 @@ def init(data):
         else:
             next(iter(snake['body']))  # Skips adding own snake's head to snake body grid.
             tail_coord = None
+            print("Is there food? Answer: " + str(json_data_board['food']))
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
             if not json_data_board['food']:
                 grid[tail_coord[0]][tail_coord[1]] = WALKABLE
+                print("Tail now walkable: y: " + str(tail_coord[0]) + " x: " + str(tail_coord[1]))
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
 
@@ -253,11 +256,13 @@ def move():
     data = bottle.request.json
     print(str(data))
     snake, grid, astar_grid = init(data)
+    print(np.matrix(grid))
 
-    json_data_board = data['board']
+    print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
+    print("nodes" + str(astar_grid.nodes))
 
-    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
     snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
+    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
     source = astar_grid.node(snake_head[0], snake_head[1])
 
     foods = []  # Tuple list of food coordinates
@@ -274,22 +279,20 @@ def move():
     finder = AStarFinder()  # Initialize AStarFinder
     for food in foods:
         target = astar_grid.node(food[0], food[1])
-        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to food
-        if not path:  # If no food or not path to food
+        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
+        if not path:
             # print "no path to food"
             continue
         else:
+            print("Path to food: " + str(path))
             break
+
     if not path:
+        print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
+        print("Path to tail:" + str(path))
 
-    path_length = len(path)
-
-    print(astar_grid.grid_str(path=path, start=source, end=target))
-    print(path)
-    print(direction(path))
-    # snek_length = len(snake_coords) + 1
     '''
         in_trouble = False
         for enemy in json_data_board['snakes']:

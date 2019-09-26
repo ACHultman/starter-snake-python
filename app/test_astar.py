@@ -56,148 +56,115 @@ def direction(path):
 
 data = \
     {
-
-        'you': {
-            'body': [
-                {
-                    'y': 10,
-                    'x': 10
-                },
-                {
-                    'y': 9,
-                    'x': 10
-                },
-                {
-                    'y': 9,
-                    'x': 9
-                },
-                {
-                    'y': 9,
-                    'x': 8
-                },
-                {
-                    'y': 8,
-                    'x': 8
-                },
-                {
-                    'y': 7,
-                    'x': 8
-                },
-                {
-                    'y': 6,
-                    'x': 8
-                },
-                {
-                    'y': 5,
-                    'x': 8
-                },
-                {
-                    'y': 4,
-                    'x': 8
-                },
-                {
-                    'y': 3,
-                    'x': 8
-                },
-                {
-                    'y': 3,
-                    'x': 7
-                },
-                {
-                    'y': 3,
-                    'x': 7
-                }
-            ],
-            'health': 100,
-            'id': 'gs_qtpgYWvxRP4QxDJJQKvybbKB',
-            'name': 'ACHultman / Fer-de-lance'
-        },
-        'turn': 60,
-        'game': {
-            'id': 'b48b201e-bcbc-4689-bfdd-20cb893ed300'
-        },
         'board': {
             'food': [
 
             ],
-            'width': 11,
             'snakes': [
                 {
+                    'name': 'AhmedNSidd / Samaritan-2',
+                    'id': 'gs_TmM7jVFhgpWXqrJfgHRwkP7P',
+                    'health': 91,
                     'body': [
                         {
-                            'y': 1,
-                            'x': 9
+                            'x': 4,
+                            'y': 4
                         },
                         {
-                            'y': 1,
-                            'x': 8
+                            'x': 3,
+                            'y': 4
                         },
                         {
-                            'y': 0,
-                            'x': 8
+                            'x': 2,
+                            'y': 4
+                        },
+                        {
+                            'x': 2,
+                            'y': 3
+                        },
+                        {
+                            'x': 2,
+                            'y': 2
                         }
-                    ],
-                    'health': 40,
-                    'id': 'gs_DxpxxhbGGjkqdTWDdKDRD6CY',
-                    'name': 'shoya4000 / Battlesnake-Hordes'
+                    ]
                 },
                 {
+                    'name': 'ACHultman / Fer-de-lance',
+                    'id': 'gs_7FjSqbxBrDRjJwK4MBCDPwx7',
+                    'health': 98,
                     'body': [
                         {
-                            'y': 10,
-                            'x': 10
+                            'x': 0,
+                            'y': 6
                         },
                         {
-                            'y': 9,
-                            'x': 10
+                            'x': 1,
+                            'y': 6
                         },
                         {
-                            'y': 9,
-                            'x': 9
+                            'x': 2,
+                            'y': 6
                         },
                         {
-                            'y': 9,
-                            'x': 8
+                            'x': 3,
+                            'y': 6
                         },
                         {
-                            'y': 8,
-                            'x': 8
+                            'x': 3,
+                            'y': 5
                         },
                         {
-                            'y': 7,
-                            'x': 8
+                            'x': 4,
+                            'y': 5
                         },
                         {
-                            'y': 6,
-                            'x': 8
-                        },
-                        {
-                            'y': 5,
-                            'x': 8
-                        },
-                        {
-                            'y': 4,
-                            'x': 8
-                        },
-                        {
-                            'y': 3,
-                            'x': 8
-                        },
-                        {
-                            'y': 3,
-                            'x': 7
-                        },
-                        {
-                            'y': 3,
-                            'x': 7
+                            'x': 5,
+                            'y': 5
                         }
-                    ],
-                    'health': 100,
-                    'id': 'gs_qtpgYWvxRP4QxDJJQKvybbKB',
-                    'name': 'ACHultman / Fer-de-lance'
+                    ]
                 }
             ],
+            'width': 11,
             'height': 11
+        },
+        'you': {
+            'name': 'ACHultman / Fer-de-lance',
+            'id': 'gs_7FjSqbxBrDRjJwK4MBCDPwx7',
+            'health': 98,
+            'body': [
+                {
+                    'x': 0,
+                    'y': 6
+                },
+                {
+                    'x': 1,
+                    'y': 6
+                },
+                {
+                    'x': 2,
+                    'y': 6
+                },
+                {
+                    'x': 3,
+                    'y': 6
+                },
+                {
+                    'x': 3,
+                    'y': 5
+                },
+                {
+                    'x': 4,
+                    'y': 5
+                },
+                {
+                    'x': 5,
+                    'y': 5
+                }
+            ]
+        },
+        'turn': 26,
+        'game': {
+            'id': 'e8c1076e-a93d-4faf-a713-e6e9201ae81a'
         }
     }
 '''
