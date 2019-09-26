@@ -247,6 +247,7 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
+    print(str(data))
     snake, grid, astar_grid = init(data)
 
     json_data_board = data['board']

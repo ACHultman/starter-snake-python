@@ -318,6 +318,7 @@ def move():
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
     print("nodes" + str(astar_grid.nodes))
 
+    snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
     source = astar_grid.node(snake_head[0], snake_head[1])
 
@@ -332,18 +333,25 @@ def move():
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     target = None
     path = None
+    finder = AStarFinder()  # Initialize AStarFinder
     for food in foods:
         target = astar_grid.node(food[0], food[1])
-        finder = AStarFinder()  # Initialize AStarFinder
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
         if not path:
             # print "no path to food"
             continue
         else:
+            print("Path to food: " + str(path))
             break
+
+    if not path:
+        print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
+        print("Path to tail:" + str(path))
+
     path_length = len(path)
-    print(path)
-        # snek_length = len(snake_coords) + 1
+    # snek_length = len(snake_coords) + 1
     '''
         in_trouble = False
         for enemy in json_data_board['snakes']:
@@ -360,5 +368,6 @@ def move():
     print(astar_grid.grid_str(path=path, start=source, end=target))
     print(path)
     print(direction(path))
+
 
 move()
