@@ -39,8 +39,12 @@ def direction(path):
     :param path:
     :return: "up", "down", "left", or "right"
     """
-    x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
-    y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
+    try:
+        x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
+        y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
+    except IndexError:
+        print("It appears there is not path.")
+        return "down"  # Implement smarter method
 
     if x_delta is 1:
         return "right"
@@ -275,3 +279,328 @@ def move():
 
 
 move()
+
+
+'''
+{
+   u'game':{
+      u'id':u'3b819e5b-d067-45b2-aba8-5e5fddbf7ab3'
+   },
+   u'you':{
+      u'health':96,
+      u'id':u'gs_tyKYS6wpDhQtTjFpj9fmXpRH',
+      u'body':[
+         {
+            u'y':5,
+            u'x':8
+         },
+         {
+            u'y':4,
+            u'x':8
+         },
+         {
+            u'y':4,
+            u'x':9
+         },
+         {
+            u'y':4,
+            u'x':10
+         },
+         {
+            u'y':3,
+            u'x':10
+         },
+         {
+            u'y':3,
+            u'x':9
+         },
+         {
+            u'y':3,
+            u'x':8
+         }
+      ],
+      u'name':u'ACHultman / Fer-de-lance'
+   },
+   u'turn':17,
+   u'board':{
+      u'height':11,
+      u'width':11,
+      u'snakes':[
+         {
+            {
+               u'health'u'game':96:,
+               {
+                  u'id'u'id'::u'gs_tyKYS6wpDhQtTjFpj9fmXpRH'u'3b819e5b-d067-45b2-aba8-5e5fddbf7ab3',
+
+               }               u'body':,
+               u'you'               [
+:{
+                     {
+                        u'y'u'health'::599,
+,
+                        u'id'u'x'::u'gs_gRwc6tFjSJTxSRKxgqwWJDRR',
+                        8                        u'body'
+                     }:,
+                     [
+                        {
+                           {
+                              u'y'u'y'::43,
+,
+                              u'x'u'x'::82
+                           }
+                        },
+                        {
+,
+                           u'y'                           {
+:                              u'y'4:,
+                              2                              u'x',
+:                              u'x'9:
+                           }                           2,
+
+                        }                        {
+,
+                           u'y'                           {
+:                              u'y'4:,
+                              u'x'2:10,
+
+                           }                           u'x',
+:{
+                              3                              u'y'
+                           }:,
+                           3                           {
+,
+                              u'y'u'x'::310,
+
+                           }                           u'x',
+:{
+                              3                              u'y'
+                           }:,
+                           3                           {
+,
+                              u'y'u'x'::39,
+
+                           }                           u'x',
+                           {
+:                              u'y'4:
+                           }                           3,
+,
+                           {
+                              u'x'u'y'::84
+                           },
+
+                        ]                        u'x',
+:                        u'name'4:
+                     }                     u'ACHultman / Fer-de-lance',
+
+                  }                  {
+,
+                     u'y'                     {
+:                        u'health'5:,
+                        87                        u'x',
+:                        u'id'4:
+                     }                     u'gs_tpSyq8vx8JCRYRVpMjwWrkWK'
+                  ],
+,
+                  u'body'u'name'::[
+                     u'ACHultman / Fer-de-lance'                     {
+
+                     }                     u'y',
+:                     u'turn'7:,
+                     17                     u'x',
+:                     u'board'8:
+                  }                  {
+,
+                     u'height'                     {
+:                        u'y'11:,
+                        6                        u'width',
+:                        u'x'11:,
+                        8                        u'snakes'
+                     }:,
+                     {
+                        [
+                           u'y'                           {
+:                              u'health':696,
+,
+                              u'x'u'id'::9                              u'gs_tyKYS6wpDhQtTjFpj9fmXpRH'
+                           },
+,
+                           u'body'                           {
+:u'y'                              [
+:{
+                                    6                                    u'y',
+:                                    u'x'5:,
+                                    10                                    u'x'
+                                 }:
+                              ]                              8,
+
+                           }                           u'name',
+:{
+                              u'j-delaney / Blue Bottle'u'y'
+                           }:,
+                           4                           {
+,
+                              u'health'u'x'::838,
+
+                           }                           u'id',
+:{
+                              u'gs_7tBtgW4RcD9TRvWQtCThSBfb'u'y',
+:                              u'body'4:,
+                              [
+                                 u'x'                                 {
+:                                    u'y':10,
+                                    u'x':7
+                                 },
+                                 {
+                                    u'y':10,
+                                    u'x'9:6
+                                 }
+                              },
+,
+                              {
+                                 {
+                                    u'y'u'y'::410,
+,
+                                    u'x'u'x'::105
+                                 }
+                              },
+
+                           ]                           {
+,
+                              u'y'u'name'::3                              u'arielone / pollypython',
+
+                           }                           u'x':,
+                           10                           {
+
+                           }                           u'health':,
+                           {
+                              99                              u'y',
+:                              u'id'3:,
+                              u'gs_gRwc6tFjSJTxSRKxgqwWJDRR'u'x',
+:                              u'body'9:
+                           }                           [
+,
+                              {
+                                 {
+                                    u'y'u'y'::33,
+,
+                                    u'x'u'x'::28
+                                 }
+                              },
+
+                           ]                           {
+,
+                              u'y'u'name'::2                              u'ACHultman / Fer-de-lance',
+
+                           }                           u'x',
+:{
+                              2                              u'health'
+                           }:,
+                           87                           {
+,
+                              u'y'u'id'::2                              u'gs_tpSyq8vx8JCRYRVpMjwWrkWK',
+,
+                              u'x'u'body'::3                              [
+
+                              }                              {
+,
+                                 u'y'                                 {
+:                                    u'y'7:,
+                                    3                                    u'x',
+:                                    u'x'8:
+                                 }                                 3,
+
+                              }                              {
+,
+                                 u'y'                                 {
+:                                    u'y'6:,
+                                    3                                    u'x',
+:                                    u'x'8:
+                                 }                                 4,
+
+                              }                              {
+,
+                                 u'y'                                 {
+:                                    u'y'6:,
+                                    4                                    u'x',
+:                                    u'x'9:
+                                 }                                 4,
+
+                              }                              {
+,
+                                 u'y'                                 {
+:                                    u'y'6:,
+                                    5                                    u'x',
+:                                    u'x'10:
+                                 }                                 4
+                              ]
+                           },
+
+                        ]                        u'name',
+:                        u'name'u'j-delaney / Blue Bottle':
+                     }                     u'ACHultman / Fer-de-lance',
+
+                  }                  {
+
+                  ]                  u'health',
+:                  u'food'83:[
+
+                  ]
+               }
+            }            163           
+            u'body':[
+               {
+                  u'y':Width11
+               },
+               {
+                  u'y':10,
+                  u'x':6
+               },
+               {
+                  u'y':10,
+                  u'x':5
+               }
+            ],
+            u'name':u'arielone / pollypython'
+         },
+         {
+            u'health':99,
+            u'id':u'gs_gRwc6tFjSJTxSRKxgqwWJDRR',
+            u'body':[
+               {
+                  u'y':3,
+                  u'x':2
+               },
+               {
+                  u'y':2,
+                  u'x':2
+               },
+               {
+                  u'y':2,
+                  u'x':3
+               },
+               {
+                  u'y':3,
+                  u'x':3
+               },
+               {
+                  u'y':3,
+                  u'x':4
+               },
+               {
+                  u'y':4,
+                  u'x':4
+               },
+               {
+                  u'y':5,
+                  u'x':4
+               }
+            ],
+            u'name':u'ACHultman / Fer-de-lance'
+         }
+      ],
+      u'food':[
+
+      ]
+   }
+}
+'''

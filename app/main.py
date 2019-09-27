@@ -1,6 +1,5 @@
 import json
 import os
-import numpy as np
 
 import bottle
 from api import ping_response, start_response, end_response, move_response
@@ -50,7 +49,7 @@ def direction(path):
         y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
     except IndexError:
         print("It appears there is not path.")
-        return "down"  # Implement smarter method
+        return "no path"  # TODO Implement smarter method
 
     if x_delta is 1:
         return "right"
@@ -78,10 +77,10 @@ def init(data):
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
         else:
-            next(iter(snake['body']))  # Skips adding own snake's head to snake body grid.
+            next(iter(you['body']))  # Skips adding own snake's head to snake body grid.
             tail_coord = None
             print("Is there food? Answer: " + str(not not json_data_board['food']))
-            for coord in snake['body']:
+            for coord in you['body']:
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
             if not json_data_board['food']:
@@ -259,11 +258,8 @@ def move():
     data = bottle.request.json
     print(data)
     snake, grid, astar_grid = init(data)
-    print(np.array(grid))
-    json_data_board = data['board']
 
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
-    print("nodes" + str(astar_grid.nodes))
 
     snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
@@ -293,8 +289,10 @@ def move():
 
     if not path:
         print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        finder2 = AStarFinder()
+        source = astar_grid.node(snake_head[0], snake_head[1])
         target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
+        path, runs = finder2.find_path(source, target, astar_grid)  # get A* shortest path to tail
         print("Path to tail:" + str(path))
 
     print("\n\nDEBUGGING\n\n")
@@ -302,7 +300,6 @@ def move():
     print("Snake Head: ", snake_head)
     print("Snake Tail: ", snake_tail)
     print("Grid: \n\n")
-    print(np.array(astar_grid.grid_str(path=path, start=source, end=target)))
     print("\n\n")
 
     '''
@@ -315,8 +312,11 @@ def move():
         if in_trouble:
             continue
     '''
-
-    return move_response(direction(path))
+    response = direction(path)
+    if response is "no path":
+        target = astar_grid.node(5, 5)
+        response, runs = finder.find_path(source, target, astar_grid)
+    return move_response(response)
 
 
 @bottle.post('/end')

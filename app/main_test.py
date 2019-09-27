@@ -45,7 +45,7 @@ def direction(path):
         y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
     except IndexError:
         print("It appears there is not path.")
-        return "down"  # Implement smarter method
+        return "no path"  # Implement smarter method
 
     if x_delta is 1:
         return "right"
@@ -57,6 +57,7 @@ def direction(path):
         return "down"
     else:
         raise RuntimeError('No return direction found in direction(path) where path = ' + str(path))
+
 
 
 def init(data):
@@ -215,7 +216,6 @@ def move(data):
     json_data_board = data['board']
 
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
-    print("nodes" + str(astar_grid.nodes))
 
     snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
@@ -267,8 +267,12 @@ def move(data):
         if in_trouble:
             continue
     '''
-    print("\n\n RESULT \n\n")
-    print(direction(path))
+    response = direction(path)
+    if response is "no path":
+        target = astar_grid.node(5, 5)
+        response, runs = finder.find_path(source, target, astar_grid)
+    print(response)
+
 
 
 data = \
