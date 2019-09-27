@@ -45,8 +45,12 @@ def direction(path):
     :param path:
     :return: "up", "down", "left", or "right"
     """
-    x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
-    y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
+    try:
+        x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
+        y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
+    except IndexError:
+        print("It appears there is not path.")
+        return "down"  # Implement smarter method
 
     if x_delta is 1:
         return "right"
