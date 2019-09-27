@@ -272,9 +272,9 @@ def move():
         y = food['y']
         foods.append((x, y))
 
-    # middle = [data['width'] / 2, data['height'] / 2]
+    middle = (data['width'] / 2, data['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
+    foods = sorted(foods, key=lambda p: distance(p, middle))  # Sorts food list by distance to snake's head
     target = None
     path = None
     finder = AStarFinder()  # Initialize AStarFinder
