@@ -215,7 +215,6 @@ def move(data):
     json_data_board = data['board']
 
     print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
-    print("nodes" + str(astar_grid.nodes))
 
     snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
