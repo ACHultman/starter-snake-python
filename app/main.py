@@ -272,14 +272,13 @@ def move():
         y = food['y']
         foods.append((x, y))
 
-    foods.append((snake_tail[0], snake_tail[1]))
-
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     target = None
     path = None
     finder = AStarFinder()  # Initialize AStarFinder
+    foods.append((snake_tail[0], snake_tail[1]))
     print(foods)
     for food in foods:
         target = astar_grid.node(food[0], food[1])
