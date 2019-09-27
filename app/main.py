@@ -293,6 +293,13 @@ def move():
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
         print("Path to tail:" + str(path))
 
+    print("\n\nDEBUGGING\n\n")
+    print("Path: ", path)
+    print("Snake Head: ", snake_head)
+    print("Snake Tail: ", snake_tail)
+    print("Grid: \n\n")
+    print(np.array(astar_grid.grid_str(path=path, start=source, end=target)))
+    print("\n\n")
 
     '''
         in_trouble = False
