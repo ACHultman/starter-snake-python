@@ -84,7 +84,7 @@ def init(data):
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
             if not json_data_board['food']:
-                grid[tail_coord[0]][tail_coord[1]] = WALKABLE
+                grid[tail_coord[0]][tail_coord[1]] = FOOD
                 print("Tail now walkable: y: " + str(tail_coord[0]) + " x: " + str(tail_coord[1]))
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
@@ -277,11 +277,14 @@ def move():
     target = None
     path = None
     finder = AStarFinder()  # Initialize AStarFinder
+    print(foods)
+    foods.append(foods[0])
+    foods.pop(0)
+    print(foods)
     for food in foods:
         target = astar_grid.node(food[0], food[1])
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
         if not path:
-            # print "no path to food"
             continue
         else:
             print("Path to food: " + str(path))
