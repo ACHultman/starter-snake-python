@@ -312,10 +312,11 @@ def move():
         if in_trouble:
             continue
     '''
-    response = direction(path)
-    if response is "no path":
+    if len(path) <= 1:
         target = astar_grid.node(5, 5)
-        response, runs = finder.find_path(source, target, astar_grid)
+        path, runs = finder.find_path(source, target, astar_grid)
+    response = direction(path)
+
     return move_response(response)
 
 
