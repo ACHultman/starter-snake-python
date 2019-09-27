@@ -80,7 +80,6 @@ def init(data):
         else:
             next(iter(you['body']))  # Skips adding own snake's head to snake body grid.
             tail_coord = None
-            print("Is there food? Answer: " + str(not not json_data_board['food']))
             for coord in you['body']:
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
@@ -90,6 +89,7 @@ def init(data):
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
 
+    json_data_board['food'].append(you['body'][-1].copy())
     astar_grid = Grid(matrix=grid)
 
     return you, grid, astar_grid
@@ -278,7 +278,6 @@ def move():
     target = None
     path = None
     finder = AStarFinder()  # Initialize AStarFinder
-    foods.append((snake_tail[0], snake_tail[1]))
     print(foods)
     for food in foods:
         target = astar_grid.node(food[0], food[1])
