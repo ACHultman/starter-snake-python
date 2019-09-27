@@ -11,6 +11,7 @@ NAME = "ACHultman / Fer-de-lance"
 WALKABLE = 1
 SNAKE = -1
 FOOD = 2
+TAIL = 3
 
 
 def distance(p, q):
@@ -84,7 +85,7 @@ def init(data):
                 grid[coord['y']][coord['x']] = SNAKE
                 tail_coord = (coord['y'], coord['x'])
             if not json_data_board['food']:
-                grid[tail_coord[0]][tail_coord[1]] = FOOD
+                grid[tail_coord[0]][tail_coord[1]] = TAIL
                 print("Tail now walkable: y: " + str(tail_coord[0]) + " x: " + str(tail_coord[1]))
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
@@ -271,15 +272,14 @@ def move():
         y = food['y']
         foods.append((x, y))
 
+    foods.append((snake_tail[0], snake_tail[1]))
+
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     target = None
     path = None
     finder = AStarFinder()  # Initialize AStarFinder
-    print(foods)
-    foods.append(foods[0])
-    foods.pop(0)
     print(foods)
     for food in foods:
         target = astar_grid.node(food[0], food[1])
