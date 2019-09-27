@@ -272,7 +272,7 @@ def move():
         y = food['y']
         foods.append((x, y))
 
-    middle = (data['width'] / 2, data['height'] / 2)
+    middle = (data['board']['width'] / 2, data['board']['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(foods, key=lambda p: distance(p, middle))  # Sorts food list by distance to snake's head
     target = None
