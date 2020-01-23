@@ -49,8 +49,8 @@ def direction(path):
         x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
         y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
     except IndexError:
-        print("It appears there is not path.")
-        return "no path"  # TODO Implement smarter method
+        print("It appears there is no path.")
+        return "null"  # TODO Implement smarter method
 
     if x_delta is 1:
         return "right"
@@ -257,6 +257,7 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
+    print("NEW MOVE: \n\n")
     print(data)
     snake, grid, astar_grid = init(data)
 
@@ -288,14 +289,6 @@ def move():
             print("Path to food: " + str(path))
             break
 
-    if not path:
-        print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
-        finder2 = AStarFinder()
-        source = astar_grid.node(snake_head[0], snake_head[1])
-        target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, runs = finder2.find_path(source, target, astar_grid)  # get A* shortest path to tail
-        print("Path to tail:" + str(path))
-
     print("\n\nDEBUGGING\n\n")
     print("Path: ", path)
     print("Snake Head: ", snake_head)
@@ -303,20 +296,22 @@ def move():
     print("Grid: \n\n")
     print("\n\n")
 
-    '''
-        in_trouble = False
-        for enemy in json_data_board['snakes']:
-            if enemy['name'] == NAME:
-                continue
-            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), food):
-                in_trouble = True
-        if in_trouble:
-            continue
-    '''
-    if len(path) <= 1:
+    while path is None:
+        print("Retrying...")
+        print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        finder2 = AStarFinder()
+        source = astar_grid.node(snake_head[0], snake_head[1])
+        target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, runs = finder2.find_path(source, target, astar_grid)  # get A* shortest path to tail
+        print("Path to tail:" + str(path))
+
+    response = direction(path)
+
+    while response is "null":
+        print("response is null, retrying...")
         target = astar_grid.node(5, 5)
         path, runs = finder.find_path(source, target, astar_grid)
-    response = direction(path)
+        response = direction(path)
 
     return move_response(response)
 

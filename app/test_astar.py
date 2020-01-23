@@ -1,6 +1,7 @@
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 import numpy as np
+import time
 
 NAME = "ACHultman / Fer-de-lance"
 WALKABLE = 1
@@ -42,7 +43,7 @@ def direction(path):
     try:
         x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
         y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
-    except IndexError:
+    except TypeError:
         print("It appears there is not path.")
         return "down"  # Implement smarter method
 
@@ -211,6 +212,7 @@ def init(datas):
 
 
 def move():
+    start = time.time()
     snake, grid, astar_grid = init(data)
     print(np.array(grid))
     json_data_board = data['board']
@@ -238,20 +240,21 @@ def move():
         target = astar_grid.node(food[0], food[1])
         path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
         if not path:
-            # print "no path to food"
+            print("No path to food")
             continue
         else:
             print("Path to food: " + str(path))
             break
 
-    if not path:
+    while path is None:
+        print("Retrying...")
         print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        finder2 = AStarFinder()
+        source = astar_grid.node(snake_head[0], snake_head[1])
         target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path to tail
+        path, runs = finder2.find_path(source, target, astar_grid)  # get A* shortest path to tail
         print("Path to tail:" + str(path))
-
-    path_length = len(path)
-    # snek_length = len(snake_coords) + 1
+        response = direction(path)
     '''
         in_trouble = False
         for enemy in json_data_board['snakes']:
@@ -264,7 +267,7 @@ def move():
     '''
     print(path)
 
-    print('path length:', path_length)
+    # print('path length:', path_length)
     print(astar_grid.grid_str(path=path, start=source, end=target))
     print(path)
     print(direction(path))
@@ -276,10 +279,11 @@ def move():
     print("Grid: \n\n")
     print(np.array(astar_grid.grid_str(path=path, start=source, end=target)))
     print("\n\n")
+    end = time.time()
+    print('Time taken: ', end - start)
 
 
 move()
-
 
 '''
 {
