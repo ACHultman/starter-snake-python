@@ -4,8 +4,7 @@ import os
 import bottle
 from api import ping_response, start_response, end_response, move_response
 
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
+import astarsearch
 
 NAME = "ACHultman / Fer-de-lance"
 WALKABLE = 1
@@ -49,7 +48,7 @@ def direction(path):
         x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
         y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
     except IndexError:
-        print("It appears there is not path.")
+        # print("It appears there is no path.")
         return "no path"  # TODO Implement smarter method
 
     if x_delta is 1:
@@ -64,35 +63,29 @@ def direction(path):
         raise RuntimeError('No return direction found in direction(path) where path = ' + str(path))
 
 
-def init(data):
+def grid_init(data):
     """
     Function for initializing the board.
     """
     json_data_board = data['board']
     height = json_data_board['height']
     you = data['you']  # Dictionary for own snake
+    barriers = []
 
     grid = [[1 for col in range(height)] for row in range(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
         if snake['name'] is not you['name']:
             for coord in snake['body']:
                 grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
+                barriers.append((coord['x'], coord['y']))
         else:
-            next(iter(you['body']))  # Skips adding own snake's head to snake body grid.
-            tail_coord = None
-            for coord in you['body']:
+            for coord in snake['body']:  # TODO Skip head in this loop
                 grid[coord['y']][coord['x']] = SNAKE
-                tail_coord = (coord['y'], coord['x'])
-            if not json_data_board['food']:
-                grid[tail_coord[0]][tail_coord[1]] = TAIL
-                print("Tail now walkable: y: " + str(tail_coord[0]) + " x: " + str(tail_coord[1]))
+                barriers.append((coord['x'], coord['y']))
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
 
-    json_data_board['food'].append(you['body'][-1].copy())
-    astar_grid = Grid(matrix=grid)
-
-    return you, grid, astar_grid
+    return you, grid, barriers
 
 
 @bottle.route('/')
@@ -135,7 +128,7 @@ def start():
             initialize your snake state here using the
             request's data if necessary.
     """
-    print(json.dumps(data))
+    # print(json.dumps(data))
 
     return start_response()
 
@@ -257,14 +250,17 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-    print(data)
-    snake, grid, astar_grid = init(data)
+    # print(data)
+    snake, grid, barriers = grid_init(data)
 
-    print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
+    astargrid = astarsearch.AStarGraph()
+    astargrid.barriers = barriers
+
+    # print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
+    # print(barriers)
 
     snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
-    source = astar_grid.node(snake_head[0], snake_head[1])
 
     foods = []  # Tuple list of food coordinates
     for food in data['board']['food']:
@@ -275,33 +271,29 @@ def move():
     # middle = [data['width'] / 2, data['height'] / 2]
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
-    target = None
     path = None
-    finder = AStarFinder()  # Initialize AStarFinder
-    print(foods)
+    # print(foods)
     for food in foods:
-        target = astar_grid.node(food[0], food[1])
-        path, runs = finder.find_path(source, target, astar_grid)  # get A* shortest path
-        if not path:
+        target = (food[0], food[1])
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path
+        if len(path) <= 1:
             continue
         else:
-            print("Path to food: " + str(path))
+            # print("Path to food: " + str(path))
             break
 
-    if not path:
-        print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
-        finder2 = AStarFinder()
-        source = astar_grid.node(snake_head[0], snake_head[1])
-        target = astar_grid.node(snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, runs = finder2.find_path(source, target, astar_grid)  # get A* shortest path to tail
-        print("Path to tail:" + str(path))
+    if len(path) <= 1:
+        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path to tail
+        # print("Path to tail:" + str(path))
 
-    print("\n\nDEBUGGING\n\n")
-    print("Path: ", path)
-    print("Snake Head: ", snake_head)
-    print("Snake Tail: ", snake_tail)
-    print("Grid: \n\n")
-    print("\n\n")
+    # print("\n\nDEBUGGING\n\n")
+    # print("Path: ", path)
+    # print("Snake Head: ", snake_head)
+    # print("Snake Tail: ", snake_tail)
+    # print("Grid: \n\n")
+    # print("\n\n")
 
     '''
         in_trouble = False
@@ -314,8 +306,9 @@ def move():
             continue
     '''
     if len(path) <= 1:
-        target = astar_grid.node(5, 5)
-        path, runs = finder.find_path(source, target, astar_grid)
+        # print("Confused, plotting path to [5,5]")
+        target = (5, 5)
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)
     response = direction(path)
 
     return move_response(response)
@@ -329,7 +322,7 @@ def end():
     TODO: If your snake AI was stateful,
         clean up any stateful objects here.
     """
-    print(json.dumps(data))
+    # print(json.dumps(data))
 
     return end_response()
 
