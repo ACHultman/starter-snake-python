@@ -206,6 +206,24 @@ def food_path(foods, data, snake, snake_head, astargrid, grid):
     return path
 
 
+def kill_path(enemies, snake, snake_head, data, astargrid):
+    enemies = sorted(enemies, key=lambda p: distance(p, snake_head))  # Sort enemy list by distance to snake's head
+    path = None
+    # print(foods)
+    for enemy in enemies:
+        if enemy_size(enemy, data) >= len(snake['body']):
+            continue
+        else:
+            target = (enemy[0], enemy[1])
+            path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
+            if len(path) <= 1:
+                continue
+            else:
+                print("Path to enemy: " + str(path))
+                return path, True
+    return path, False
+
+
 @bottle.route('/')
 def index():
     head_url = 'https://preview.redd.it/gmqetvdruob01.png?width=640&crop=smart&auto=webp&s' \
@@ -369,15 +387,27 @@ def start():
 def move():
     data = bottle.request.json
     # print(data)
-    snake, grid, barriers = grid_init(data)
+    own_snake, grid, barriers = grid_init(data)
     astargrid = astarsearch.AStarGraph()
     astargrid.barriers = barriers
-
+    turn = data['turn']
     # print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
     # print(barriers)
 
-    snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
-    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])  # Coordinates for own snake's head
+    snake_tail = (own_snake['body'][-1]['x'], own_snake['body'][-1]['y'])
+    snake_head = (own_snake['body'][0]['x'], own_snake['body'][0]['y'])  # Coordinates for own snake's head
+
+    enemies = [(snake['body'][0]['x'], snake['body'][0]['y']) for snake in data['board']['snakes']]
+    if own_snake['health'] > 60 and turn > 5:  # Kill logic
+        print('HUNTING...')
+        path, result_1 = kill_path(enemies, own_snake, snake_head, data, astargrid)
+        if result_1:
+            print('KILL PATH FOUND')
+            new_move, result_2 = last_check(path, grid, own_snake, data)
+            if result_2:
+                path[1] = new_move
+            return move_response(direction(path))
+
 
     foods = []  # Tuple list of food coordinates
     for food in data['board']['food']:
@@ -387,39 +417,18 @@ def move():
 
     # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    path = food_path(foods, data, snake, snake_head, astargrid, grid)
+    path = food_path(foods, data, own_snake, snake_head, astargrid, grid)  # Food logic
 
-    if len(path) <= 1 or is_threat(path[1], grid, snake, data):
+    if len(path) <= 1 or is_threat(path[1], grid, own_snake, data):
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
         # print("Path to tail:" + str(path))
 
-    new_move, result = last_check(path, grid, snake, data)
+    new_move, result = last_check(path, grid, own_snake, data)
     if result:
         path[1] = new_move
 
-    # print("\n\nDEBUGGING\n\n")
-    # print("Path: ", path)
-    # print("Snake Head: ", snake_head)
-    # print("Snake Tail: ", snake_tail)
-    # print("Grid: \n\n")
-    # print("\n\n")
-
-    '''
-        in_trouble = False
-        for enemy in json_data_board['snakes']:
-            if enemy['name'] == NAME:
-                continue
-            if path_length > distance((enemy['body'][0]['x'], enemy['body'][0]['y']), food):
-                in_trouble = True
-        if in_trouble:
-            continue
-    
-    if is_threat(path[1], grid, snake, data):
-        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path to tail
-'''
     response = direction(path)
 
     return move_response(response)
