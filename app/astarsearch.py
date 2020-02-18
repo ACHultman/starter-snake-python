@@ -1,7 +1,7 @@
 """
 Edited A* search code from https://rosettacode.org/wiki/A*_search_algorithm#Python
 """
-
+from main import in_bounds
 
 class AStarGraph(object):
     barriers = None  # type: List[Any]
@@ -22,13 +22,13 @@ class AStarGraph(object):
         # print('')
         return dx + dy
 
-    def get_vertex_neighbours(self, pos):
+    def get_vertex_neighbours(self, pos, data):
         n = []
         # Moves allowed are Manhattan-style
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             x2 = pos[0] + dx
             y2 = pos[1] + dy
-            if x2 < 0 or x2 > 14 or y2 < 0 or y2 > 14:
+            if not in_bounds(x2, y2, data):
                 continue
             n.append((x2, y2))
         return n
@@ -41,7 +41,7 @@ class AStarGraph(object):
         return 1  # Normal movement cost
 
 
-def AStarSearch(start, end, graph):
+def AStarSearch(start, end, graph, data):
     # print('*********ASTARSEARCH***********')
     # print('start: ', start)
     # print('end: ', end)
@@ -83,7 +83,7 @@ def AStarSearch(start, end, graph):
         closedVertices.add(current)
 
         # Update scores for vertices near the current position
-        for neighbour in graph.get_vertex_neighbours(current):
+        for neighbour in graph.get_vertex_neighbours(current, data):
             if neighbour in closedVertices:
                 continue  # We have already processed this node exhaustively
             candidateG = G[current] + graph.move_cost(current, neighbour)

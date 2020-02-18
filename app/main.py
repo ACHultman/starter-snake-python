@@ -191,7 +191,7 @@ def food_path(foods, data, snake, snake_head, astargrid, grid):
     # print(foods)
     for food in foods:
         target = (food[0], food[1])
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
         if len(path) <= 1:
             continue
         elif len(path) == 2:
@@ -392,7 +392,7 @@ def move():
     if len(path) <= 1 or is_threat(path[1], grid, snake, data):
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path to tail
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
         # print("Path to tail:" + str(path))
 
     new_move, result = last_check(path, grid, snake, data)
