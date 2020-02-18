@@ -98,7 +98,7 @@ def AStarSearch(start, end, graph):
             G[neighbour] = candidateG
             H = graph.heuristic(neighbour, end)
             F[neighbour] = G[neighbour] + H
-            print('neighbour: :', neighbour)
-            print('F[neighbour]', F[neighbour])
+            # print('neighbour: :', neighbour)
+            # print('F[neighbour]', F[neighbour])
             # print('current: ', current)
     raise RuntimeError("A* failed to find a solution")

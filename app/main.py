@@ -13,6 +13,14 @@ FOOD = 2
 TAIL = 3
 
 
+def in_bounds(x, y, data):
+    limit = data['board']['height'] - 1
+    if x > limit or x < 0 or y > limit or y < 0:
+        return False
+    else:
+        return True
+
+
 def distance(p, q):
     """
     Helper function for finding Manhattan distance between two cartesian points.
@@ -63,6 +71,85 @@ def direction(path):
         raise RuntimeError('No return direction found in direction(path) where path = ' + str(path))
 
 
+def enemy_size(pos, data):
+    """
+    Finds enemy snake at given position and returns its size.
+    :param pos: position of enemy snake
+    :param data: game data
+    :return: size of snake at the position
+    """
+    snakes = data['board']['snakes']
+    for snake in snakes:
+        for coord in snake['body']:
+            # print('pos==coord? ', pos, coord)
+            if pos == (coord['x'], coord['y']):
+                print('enemy_size is ', len(snake['body']))
+                return len(snake['body'])
+    raise RuntimeError('No snake found in enemy_size')
+
+
+def is_threat(pos, grid, snake, data):
+    """
+    Returns true if other >= snakes (threat) near target
+    """
+    snake_body = []
+    for coord in snake['body']:
+        snake_body.append((coord['x'], coord['y']))
+    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+        x2 = pos[0] + dx
+        y2 = pos[1] + dy
+        if not in_bounds(x2, y2, data):
+            continue
+        current_pos = grid[y2][x2]
+        print('current_pos: ', current_pos)
+        print('snake_body: ', snake_body)
+        if current_pos == -1 and (x2, y2) not in snake_body:
+            print('oh no')
+            if enemy_size((x2, y2), data) < len(snake['body']):
+                print('snake_size: ', len(snake['body']))
+                return False  # Nearby enemy is smaller
+            else:
+                return True  # Nearby enemy is bigger
+    return False  # No enemies found
+
+
+def last_check(path, grid, snake, data):
+    """
+
+    :param path:
+    :param snake:
+    :param grid:
+    :param data:
+    :return:
+    """
+    snake_body = []
+    for coord in snake['body']:
+        snake_body.append((coord['x'], coord['y']))
+
+    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
+    if is_threat(path[1], grid, snake, data):  # If plotted path is still dangerous
+        print('Last check is threat!')
+        new_move = None
+        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            x2 = snake_head[0] + dx
+            y2 = snake_head[1] + dy
+            new_move = (x2, y2)
+            print('new_move: ', new_move)
+            if not in_bounds(x2, y2, data):  # If not in bounds, try another move
+                print('new_move is not in bounds!')
+                continue
+            elif is_threat(new_move, grid, snake, data):  # If still dangerous, try another move
+                print('new_move is still dangerous!')
+                continue
+            elif new_move in snake_body:  # If new_move is self-collision, try another move
+                continue
+            else:  # Suitable move
+                print('new_move is suitable')
+                return new_move, True
+        print('no suitable new_move found')
+    return path[1], False
+
+
 def grid_init(data):
     """
     Function for initializing the board.
@@ -74,18 +161,49 @@ def grid_init(data):
 
     grid = [[1 for col in range(height)] for row in range(height)]  # initialize 2d grid
     for snake in json_data_board['snakes']:
-        if snake['name'] is not you['name']:
+        if snake['name'] != you['name']:
             for coord in snake['body']:
+                '''
+                if coord is snake['body'][0]:
+                    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                        x2 = coord['x'] + dx
+                        y2 = coord['y'] + dy
+                        if x2 < 0 or x2 > 14 or y2 < 0 or y2 > 14:  # TODO make bounds run-time variable
+                            continue
+                        barriers.append((x2, y2))
+                '''
                 grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
                 barriers.append((coord['x'], coord['y']))
         else:
-            for coord in snake['body']:  # TODO Skip head in this loop
-                grid[coord['y']][coord['x']] = SNAKE
-                barriers.append((coord['x'], coord['y']))
+            for coord in snake['body']:  # Skip adding own tail to barriers in this loop
+                if coord is not snake['body'][-1]:
+                    grid[coord['y']][coord['x']] = SNAKE
+                    barriers.append((coord['x'], coord['y']))
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
 
     return you, grid, barriers
+
+
+def food_path(foods, data, snake, snake_head, astargrid, grid):
+    foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
+    path = None
+    # print(foods)
+    for food in foods:
+        target = (food[0], food[1])
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path
+        if len(path) <= 1:
+            continue
+        elif len(path) == 2:
+            print('food is close')
+            if is_threat(target, grid, snake, data):
+                continue
+            else:
+                break
+        else:
+            print("Path to food: " + str(path))
+            break
+    return path
 
 
 @bottle.route('/')
@@ -252,7 +370,6 @@ def move():
     data = bottle.request.json
     # print(data)
     snake, grid, barriers = grid_init(data)
-
     astargrid = astarsearch.AStarGraph()
     astargrid.barriers = barriers
 
@@ -268,25 +385,19 @@ def move():
         y = food['y']
         foods.append((x, y))
 
-    middle = (data['board']['width'] / 2, data['board']['height'] / 2)
+    # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
-    path = None
-    # print(foods)
-    for food in foods:
-        target = (food[0], food[1])
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path
-        if len(path) <= 1:
-            continue
-        else:
-            # print("Path to food: " + str(path))
-            break
+    path = food_path(foods, data, snake, snake_head, astargrid, grid)
 
-    if len(path) <= 1:
+    if len(path) <= 1 or is_threat(path[1], grid, snake, data):
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path to tail
         # print("Path to tail:" + str(path))
+
+    new_move, result = last_check(path, grid, snake, data)
+    if result:
+        path[1] = new_move
 
     # print("\n\nDEBUGGING\n\n")
     # print("Path: ", path)
@@ -304,11 +415,11 @@ def move():
                 in_trouble = True
         if in_trouble:
             continue
-    '''
-    if len(path) <= 1:
-        # print("Confused, plotting path to [5,5]")
-        target = (5, 5)
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)
+    
+    if is_threat(path[1], grid, snake, data):
+        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, f = astarsearch.AStarSearch(snake_head, target, astargrid)  # get A* shortest path to tail
+'''
     response = direction(path)
 
     return move_response(response)
