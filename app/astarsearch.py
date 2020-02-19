@@ -92,6 +92,8 @@ def AStarSearch(start, end, graph, data):
                 openVertices.add(neighbour)  # Discovered a new vertex
             elif candidateG >= G[neighbour]:
                 continue  # This G score is worse than previously found
+            elif candidateG > 100:
+                continue
 
             # Adopt this G score
             cameFrom[neighbour] = current
