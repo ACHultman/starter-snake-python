@@ -25,8 +25,8 @@ def distance(p, q):
     """
     Helper function for finding Manhattan distance between two cartesian points.
     """
-    print('p: ', p)
-    print('q: ', q)
+    # print('p: ', p)
+    # print('q: ', q)
     dx = abs(int(p[0]) - q[0])
     dy = abs(int(p[1]) - q[1])
     return dx + dy
@@ -86,7 +86,7 @@ def enemy_size(pos, data):
         for coord in snake['body']:
             # print('pos==coord? ', pos, coord)
             if pos == (coord['x'], coord['y']):
-                print('enemy_size is ', len(snake['body']))
+                # print('enemy_size is ', len(snake['body']))
                 return len(snake['body'])
     raise RuntimeError('No snake found in enemy_size')
 
@@ -104,12 +104,12 @@ def is_threat(pos, grid, snake, data):
         if not in_bounds(x2, y2, data):
             continue
         current_pos = grid[y2][x2]
-        print('current_pos: ', current_pos)
-        print('snake_body: ', snake_body)
+        # print('current_pos: ', current_pos)
+        # print('snake_body: ', snake_body)
         if current_pos == -1 and (x2, y2) not in snake_body:
             print('oh no')
             if enemy_size((x2, y2), data) < len(snake['body']):
-                print('snake_size: ', len(snake['body']))
+                # print('snake_size: ', len(snake['body']))
                 return False  # Nearby enemy is smaller
             else:
                 return True  # Nearby enemy is bigger
@@ -130,7 +130,7 @@ def last_check(path, grid, snake, data):
         snake_body.append((coord['x'], coord['y']))
 
     snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
-    if is_threat(path[1], grid, snake, data):  # If plotted path is still dangerous
+    if len(path) <= 1 or is_threat(path[1], grid, snake, data):  # If plotted path is still dangerous
         print('Last check is threat!')
         new_move = None
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -225,8 +225,6 @@ def kill_path(enemies, snake, snake_head, data, astargrid):
             target = (enemy[0], enemy[1])
             path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
             if len(path) <= 1:
-                continue
-            elif f > 100:
                 continue
             else:
                 print("Path to enemy: " + str(path))
@@ -416,6 +414,7 @@ def move():
             new_move, result_2 = last_check(path, grid, own_snake, data)
             if result_2:
                 path[1] = new_move
+            print('MOVING TO KILL')
             return move_response(direction(path))
 
     foods = []  # Tuple list of food coordinates
@@ -427,19 +426,20 @@ def move():
     # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     path = food_path(foods, data, own_snake, snake_head, astargrid, grid, enemies)  # Food logic
-
+    print('Path to food: ', path)
     if path is None or len(path) <= 1 or is_threat(path[1], grid, own_snake, data):
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
-        # print("Path to tail:" + str(path))
+        print("PATH TO TAIL:" + str(path))
 
     new_move, result = last_check(path, grid, own_snake, data)
     if result:
+        print('LAST_CHECK CORRECTION: ', new_move)
         path[1] = new_move
 
     response = direction(path)
-
+    print('moving: ', response)
     return move_response(response)
 
 
