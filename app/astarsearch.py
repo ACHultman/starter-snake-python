@@ -2,6 +2,8 @@
 Edited A* search code from https://rosettacode.org/wiki/A*_search_algorithm#Python
 """
 from main import in_bounds
+from collections import deque
+
 
 class AStarGraph(object):
     barriers = None  # type: List[Any]
@@ -9,6 +11,7 @@ class AStarGraph(object):
     # Define a board-like grid
 
     def __init__(self):
+        self.graph = [[]]
         self.barriers = []
 
     def heuristic(self, start, goal):
@@ -104,3 +107,23 @@ def AStarSearch(start, end, graph, data):
             # print('F[neighbour]', F[neighbour])
             # print('current: ', current)
     raise RuntimeError("A* failed to find a solution")
+
+
+def bfs(grid, data, start):
+    count = 1
+    queue = deque([start])
+    visited = set()
+    while queue:
+        curr_node = queue.popleft()
+        visited.add(curr_node)
+
+        neighbours = grid.get_vertex_neighbours(curr_node, data)
+        for neighbour in neighbours:
+            if grid.graph[neighbour[0]][neighbour[1]] == -1:
+                visited.add(neighbour)
+                continue
+            if neighbour not in visited:
+                count = count + 1
+                visited.add(neighbour)
+                queue.append(neighbour)
+    return count

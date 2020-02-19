@@ -103,7 +103,7 @@ def is_threat(pos, grid, snake, data, enemies):
         y2 = pos[1] + dy
         if not in_bounds(x2, y2, data):
             continue
-        current_pos = grid[y2][x2]
+        current_pos = grid.graph[y2][x2]
         # print('current_pos: ', current_pos)
         # print('snake_body: ', snake_body)
         if current_pos == -1 and (x2, y2) not in snake_body:  # If position is snake and is not mine
@@ -123,6 +123,9 @@ def is_threat(pos, grid, snake, data, enemies):
             else:
                 print('Nearby enemy is not its head at ', (x2, y2))
                 continue  # Nearby enemy is not its head so is threat
+        elif current_pos == -1:
+            if (dx, dy) == (0, 0):
+                return True
     print('No threats found at ', (x2, y2))
     return False  # No enemies found
 
@@ -137,14 +140,16 @@ def last_check(path, grid, snake, data, enemies):
     :param data:
     :return:
     """
+    new_moves = []
     snake_body = []
+
     for coord in snake['body']:
         snake_body.append((coord['x'], coord['y']))
-    del snake_body[-1]
-    snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
-    if len(path) <= 1 or is_threat(path[1], grid, snake, data, enemies) or path[1] in snake_body:  # If dangerous
-        print('Last check is threat!')
-        new_move = None
+    if snake['health'] < 100 and data['turn'] > 5:  # If food has not just been eaten
+        del snake_body[-1]
+    snake_head = snake_body[0]
+
+    if len(path) <= 1 or is_threat(path[1], grid, snake, data, enemies) or path[1] in snake_body:
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             x2 = snake_head[0] + dx
             y2 = snake_head[1] + dy
@@ -159,9 +164,26 @@ def last_check(path, grid, snake, data, enemies):
             elif new_move in snake_body:  # If new_move is self-collision, try another move
                 continue
             else:  # Suitable move
-                print('new_move is suitable')
-                return new_move, True
-        print('no suitable new_move found')
+                print('new_move is suitable', new_move)
+                new_moves.append(new_move)
+
+    if len(new_moves) > 0:
+        largest = 0
+        best_move = None
+        '''
+        if len(path) >= 2:
+            best_move = path[1]
+            largest = astarsearch.bfs(grid, data, path[1])
+        '''
+        for new_move in new_moves:
+            count = astarsearch.bfs(grid, data, new_move)
+            print('count: ', count)
+            print('new_move: ', new_move)
+            if count > largest:
+                largest = count
+                best_move = new_move
+
+        return best_move, True
 
     return path[1], False
 
@@ -201,9 +223,10 @@ def grid_init(data):
     return you, grid, barriers
 
 
-def food_path(foods, data, snake, snake_head, astargrid, grid, enemies):
+def food_path(foods, data, snake, snake_head, astargrid, enemies):
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     path = None
+    f = 0
     # print(foods)
     for food in foods:
         food_coords = (food[0], food[1])
@@ -215,9 +238,11 @@ def food_path(foods, data, snake, snake_head, astargrid, grid, enemies):
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
         if len(path) <= 1:
             continue
+        elif f > 100:
+            continue
         elif len(path) == 2:
             print('food is close')
-            if is_threat(target, grid, snake, data, enemies):
+            if is_threat(target, astargrid, snake, data, enemies):
                 continue
             else:
                 break
@@ -225,7 +250,7 @@ def food_path(foods, data, snake, snake_head, astargrid, grid, enemies):
             print("Path to food: " + str(path))
             print('Path to food COST: ', f)
             break
-    return path
+    return path, f
 
 
 def kill_path(enemies, snake, snake_head, data, astargrid):
@@ -416,7 +441,9 @@ def move():
     own_snake, grid, barriers = grid_init(data)
     astargrid = astarsearch.AStarGraph()
     astargrid.barriers = barriers
+    astargrid.graph = grid
     turn = data['turn']
+
     print('********** MOVE ' + str(turn) + ' *************')
     # print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
     # print(barriers)
@@ -430,7 +457,7 @@ def move():
         path, result_1 = kill_path(enemies, own_snake, snake_head, data, astargrid)
         if result_1:
             print('KILL PATH FOUND')
-            new_move, result_2 = last_check(path, grid, own_snake, data, enemies)
+            new_move, result_2 = last_check(path, astargrid, own_snake, data, enemies)
             if result_2:
                 path[1] = new_move
             print('MOVING TO KILL')
@@ -444,9 +471,9 @@ def move():
 
     # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    path = food_path(foods, data, own_snake, snake_head, astargrid, grid, enemies)  # Food logic
+    path, f = food_path(foods, data, own_snake, snake_head, astargrid, enemies)  # Food logic
     print('Path to food: ', path)
-    if path is None or len(path) <= 1 or is_threat(path[1], grid, own_snake, data, enemies):
+    if path is None or len(path) <= 1 or f > 100:
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
@@ -458,7 +485,7 @@ def move():
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(path))
 
-    new_move, result = last_check(path, grid, own_snake, data, enemies)
+    new_move, result = last_check(path, astargrid, own_snake, data, enemies)
     if result:
         print('LAST_CHECK CORRECTION: ', new_move)
         if len(path) <= 1:
