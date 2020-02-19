@@ -25,6 +25,8 @@ def distance(p, q):
     """
     Helper function for finding Manhattan distance between two cartesian points.
     """
+    print('p: ', p)
+    print('q: ', q)
     dx = abs(int(p[0]) - q[0])
     dy = abs(int(p[1]) - q[1])
     return dx + dy
@@ -39,12 +41,13 @@ def closest(items, ref):
 
     # TODO: use builtin min for speed up
     for item in items:
+        print('item: ', item)
         item_distance = distance(ref, item)
         if item_distance < closest_distance:
             closest_item = item
             closest_distance = item_distance
 
-    return closest_item
+    return closest_item, closest_distance
 
 
 def direction(path):
@@ -185,12 +188,17 @@ def grid_init(data):
     return you, grid, barriers
 
 
-def food_path(foods, data, snake, snake_head, astargrid, grid):
+def food_path(foods, data, snake, snake_head, astargrid, grid, enemies):
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     path = None
     # print(foods)
     for food in foods:
-        target = (food[0], food[1])
+        food_coords = (food[0], food[1])
+        enemy_distance = closest(enemies, food_coords)[1]
+        my_distance = distance(snake_head, food_coords)
+        if enemy_distance < my_distance:
+            continue
+        target = food_coords
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
         if len(path) <= 1:
             continue
@@ -217,6 +225,8 @@ def kill_path(enemies, snake, snake_head, data, astargrid):
             target = (enemy[0], enemy[1])
             path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
             if len(path) <= 1:
+                continue
+            elif f > 100:
                 continue
             else:
                 print("Path to enemy: " + str(path))
@@ -408,7 +418,6 @@ def move():
                 path[1] = new_move
             return move_response(direction(path))
 
-
     foods = []  # Tuple list of food coordinates
     for food in data['board']['food']:
         x = food['x']
@@ -417,9 +426,9 @@ def move():
 
     # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
     # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    path = food_path(foods, data, own_snake, snake_head, astargrid, grid)  # Food logic
+    path = food_path(foods, data, own_snake, snake_head, astargrid, grid, enemies)  # Food logic
 
-    if len(path) <= 1 or is_threat(path[1], grid, own_snake, data):
+    if path is None or len(path) <= 1 or is_threat(path[1], grid, own_snake, data):
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
