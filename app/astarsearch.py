@@ -1,7 +1,7 @@
 """
 Edited A* search code from https://rosettacode.org/wiki/A*_search_algorithm#Python
 """
-from main import in_bounds
+from utils import *
 from collections import deque
 
 
