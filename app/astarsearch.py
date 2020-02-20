@@ -25,7 +25,7 @@ class AStarGraph(object):
         # print('')
         return dx + dy
 
-    def get_vertex_neighbours(self, pos, data):
+    def get_vertex_neighbours(self, pos, data, grid):
         n = []
         # Moves allowed are Manhattan-style
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -33,10 +33,12 @@ class AStarGraph(object):
             y2 = pos[1] + dy
             if not in_bounds(x2, y2, data):
                 continue
+            elif grid.graph[y2][x2] == -1:
+                continue
             n.append((x2, y2))
         return n
 
-    def move_cost(self, a, b):
+    def move_cost(self, b):
         # print('self.barriers: ', self.barriers)
         for barrier in self.barriers:
             if b == barrier:
@@ -51,7 +53,6 @@ def AStarSearch(start, end, graph, data):
     # print('barriers: ', graph.barriers)
     G = {}  # Actual movement cost to each position from the start position
     F = {}  # Estimated movement cost of start to end going via this position
-
     # Initialize starting values
     G[start] = 0
     F[start] = graph.heuristic(start, end)
@@ -86,13 +87,14 @@ def AStarSearch(start, end, graph, data):
         closedVertices.add(current)
 
         # Update scores for vertices near the current position
-        for neighbour in graph.get_vertex_neighbours(current, data):
+        for neighbour in graph.get_vertex_neighbours(current, data, graph):
             if neighbour in closedVertices:
                 continue  # We have already processed this node exhaustively
-            candidateG = G[current] + graph.move_cost(current, neighbour)
+            candidateG = G[current] + 1
 
             if neighbour not in openVertices:
                 openVertices.add(neighbour)  # Discovered a new vertex
+
             elif candidateG >= G[neighbour]:
                 continue  # This G score is worse than previously found
             elif candidateG > 100:
@@ -106,7 +108,8 @@ def AStarSearch(start, end, graph, data):
             # print('neighbour: :', neighbour)
             # print('F[neighbour]', F[neighbour])
             # print('current: ', current)
-    raise RuntimeError("A* failed to find a solution")
+    path = [start]
+    return path, 0
 
 
 def bfs(grid, data, start):
@@ -117,11 +120,8 @@ def bfs(grid, data, start):
         curr_node = queue.popleft()
         visited.add(curr_node)
 
-        neighbours = grid.get_vertex_neighbours(curr_node, data)
+        neighbours = grid.get_vertex_neighbours(curr_node, data, grid)
         for neighbour in neighbours:
-            if grid.graph[neighbour[0]][neighbour[1]] == -1:
-                visited.add(neighbour)
-                continue
             if neighbour not in visited:
                 count = count + 1
                 visited.add(neighbour)

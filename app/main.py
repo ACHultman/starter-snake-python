@@ -91,11 +91,20 @@ def enemy_size(pos, data):
     raise RuntimeError('No snake found in enemy_size')
 
 
+def is_dead_end(pos, grid, data, snake):
+
+    if astarsearch.bfs(grid, data, pos) <= len(snake['body']):
+        return True
+    else:
+        return False
+
+
 def is_threat(pos, grid, snake, data, enemies):
     """
     Returns true if other >= snakes (threat) near target
     """
     snake_body = []
+    own_snake_count = 0
     for coord in snake['body']:
         snake_body.append((coord['x'], coord['y']))
     for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1), (0, 0)]:
@@ -126,6 +135,14 @@ def is_threat(pos, grid, snake, data, enemies):
         elif current_pos == -1:
             if (dx, dy) == (0, 0):
                 return True
+            '''
+            elif own_snake_count > 1:
+                return True
+            '''
+        elif is_dead_end((x2, y2), grid, data, snake):
+            print('Dead end threat detected')
+            return True
+
     print('No threats found at ', (x2, y2))
     return False  # No enemies found
 
@@ -265,7 +282,7 @@ def kill_path(enemies, snake, snake_head, data, astargrid):
             path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
             if len(path) <= 1:
                 continue
-            elif f > 100:
+            elif f > 3:
                 print('f too large: ', f)
                 continue
             else:
@@ -479,7 +496,7 @@ def move():
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(path))
 
-    if own_snake['health'] > 80 and turn > 10:
+    if own_snake['health'] > 65 and turn > 30:
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
@@ -492,6 +509,10 @@ def move():
             path.append(new_move)
         else:
             path[1] = new_move
+
+    if len(path) <= 1:
+        #survive()
+        print('Survive...')
 
     response = direction(path)
     print('moving: ', response)
