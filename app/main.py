@@ -6,14 +6,8 @@ import os
 import bottle
 from api import ping_response, start_response, end_response, move_response
 
-import astarsearch
+from algs import *
 from utils import *
-
-NAME = "ACHultman / Fer-de-lance"
-WALKABLE = 1
-SNAKE = -1
-FOOD = 2
-TAIL = 3
 
 
 def is_threat(pos, grid, snake, data, enemies):
@@ -24,19 +18,20 @@ def is_threat(pos, grid, snake, data, enemies):
     own_snake_count = 0
     for coord in snake['body']:
         snake_body.append((coord['x'], coord['y']))
-    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1), (0, 0)]:
-        x2 = pos[0] + dx
-        y2 = pos[1] + dy
-        if not in_bounds(x2, y2, data):
-            continue
-        current_pos = grid.graph[y2][x2]
+
+    neighbours = get_vertex_neighbours(pos, data, grid)
+    neighbours.append(pos)
+    for neighbour in neighbours:
+        y2 = neighbour[1]
+        x2 = neighbour[0]
+        current_pos = grid[y2][x2]
         # print('current_pos: ', current_pos)
         # print('snake_body: ', snake_body)
-        if current_pos == -1 and (x2, y2) not in snake_body:  # If position is snake and is not mine
+        if current_pos < 0 and neighbour not in snake_body:  # If position is snake and is not mine
             print('oh no')
             print('x2, y2: ', (x2, y2))
             print('enemies: ', enemies)
-            if (x2, y2) in enemies:
+            if neighbour in enemies:  # If neighbour is enemy head
                 if enemy_size((x2, y2), data) < len(snake['body']):
                     # print('snake_size: ', len(snake['body']))
                     print('Nearby enemy is smaller at ', (x2, y2))
@@ -44,24 +39,69 @@ def is_threat(pos, grid, snake, data, enemies):
                 else:
                     print(' Nearby enemy is bigger at ', (x2, y2))
                     return True  # Nearby enemy is bigger
-            elif (dx, dy) == (0, 0):
+            elif neighbour == pos:  # If neighbour is suggested path (and is snake)
                 return True  # Space occupied by snake
             else:
                 print('Nearby enemy is not its head at ', (x2, y2))
-                continue  # Nearby enemy is not its head so is threat
-        elif current_pos == -1:
-            if (dx, dy) == (0, 0):
+                continue  # Nearby enemy is not its head so is not threat
+        elif current_pos < 0:
+            if neighbour == pos:
                 return True
             '''
             elif own_snake_count > 1:
                 return True
             '''
-        elif is_dead_end((x2, y2), grid, data, snake):
-            print('Dead end threat detected')
-            return True
+        elif current_pos == 0:  # Is snake tail
+            enemy_head = get_enemy(pos, data)['body'][0]
+            enemy_head = (enemy_head['x'], enemy_head['y'])
+            if adj_food(enemy_head, data, grid):  # If enemy head near food, is threat
+                return True
 
-    print('No threats found at ', (x2, y2))
+    if is_dead_end(pos, grid, data, snake):
+        print('Dead end threat detected')
+        return True
+
+    print('No threats found at ', pos)
     return False  # No enemies found
+
+
+def survive(snake, data, grid):
+    snake_body = []
+    path = []
+    new_moves = []
+
+    for coord in snake['body']:
+        snake_body.append((coord['x'], coord['y']))
+    if snake['health'] < 100 and data['turn'] > 5:  # If food has not just been eaten then disregard tail
+        del snake_body[-1]
+    snake_head = snake_body[0]
+    path.append(snake_head)
+
+    neighbours = get_vertex_neighbours(snake_head, data, grid)
+    for neighbour in neighbours:
+        y2 = neighbour[1]
+        x2 = neighbour[0]
+        if grid[y2][x2] < 0:
+            continue
+        elif neighbour in snake_body:  # If new_move is self-collision, try another move
+            continue
+        else:  # Suitable move
+            print('new_move is suitable', neighbour)
+            new_moves.append(neighbour)
+    if len(new_moves) > 0:
+        largest = 0
+        best_move = None
+        for new_move in new_moves:
+            count = bfs(grid, data, new_move)
+            print('count: ', count)
+            print('new_move: ', new_move)
+            if count > largest:
+                largest = count
+                best_move = new_move
+        path.append(best_move)
+        return path
+    print('Survive failed...')
+    return path
 
 
 def last_check(path, grid, snake, data, enemies):
@@ -84,99 +124,58 @@ def last_check(path, grid, snake, data, enemies):
     snake_head = snake_body[0]
 
     if len(path) <= 1 or is_threat(path[1], grid, snake, data, enemies) or path[1] in snake_body:
-        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-            x2 = snake_head[0] + dx
-            y2 = snake_head[1] + dy
-            new_move = (x2, y2)
-            print('new_move: ', new_move)
-            if not in_bounds(x2, y2, data):  # If not in bounds, try another move
-                print('new_move is not in bounds!')
+        neighbours = get_vertex_neighbours(snake_head, data, grid)
+        for neighbour in neighbours:
+            print('neighbour: ', neighbour)
+            if is_threat(neighbour, grid, snake, data, enemies):  # If still dangerous, try another move
+                print('neighbour is still dangerous!')
                 continue
-            elif is_threat(new_move, grid, snake, data, enemies):  # If still dangerous, try another move
-                print('new_move is still dangerous!')
-                continue
-            elif new_move in snake_body:  # If new_move is self-collision, try another move
+            elif neighbour in snake_body:  # If neighbour is self-collision, try another move
                 continue
             else:  # Suitable move
-                print('new_move is suitable', new_move)
-                new_moves.append(new_move)
+                print('neighbour is suitable', neighbour)
+                new_moves.append(neighbour)
+
+    if len(path) <= 1:
+        path = survive(snake, data, grid)
 
     if len(new_moves) > 0:
         largest = 0
         best_move = None
-        '''
-        if len(path) >= 2:
-            best_move = path[1]
-            largest = astarsearch.bfs(grid, data, path[1])
-        '''
-        for new_move in new_moves:
-            count = astarsearch.bfs(grid, data, new_move)
+        for neighbour in new_moves:
+            count = bfs(grid, data, neighbour)
             print('count: ', count)
-            print('new_move: ', new_move)
+            print('neighbour: ', neighbour)
             if count > largest:
                 largest = count
-                best_move = new_move
-
+                best_move = neighbour
         return best_move, True
 
     return path[1], False
 
 
-def grid_init(data):
-    """
-    Function for initializing the board.
-    """
-    json_data_board = data['board']
-    height = json_data_board['height']
-    you = data['you']  # Dictionary for own snake
-    barriers = []
-
-    grid = [[1 for col in range(height)] for row in range(height)]  # initialize 2d grid
-    for snake in json_data_board['snakes']:
-        if snake['name'] != you['name']:
-            for coord in snake['body']:
-                '''
-                if coord is snake['body'][0]:
-                    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                        x2 = coord['x'] + dx
-                        y2 = coord['y'] + dy
-                        if x2 < 0 or x2 > 14 or y2 < 0 or y2 > 14:  # TODO make bounds run-time variable
-                            continue
-                        barriers.append((x2, y2))
-                '''
-                grid[coord['y']][coord['x']] = SNAKE  # Documents other snake's bodies for later evasion.
-                barriers.append((coord['x'], coord['y']))
-        else:
-            for coord in snake['body']:  # Skip adding own tail to barriers in this loop
-                if coord is not snake['body'][-1]:
-                    grid[coord['y']][coord['x']] = SNAKE
-                    barriers.append((coord['x'], coord['y']))
-    for food in json_data_board['food']:  # For loop for marking all food on grid.
-        grid[food['y']][food['x']] = FOOD
-
-    return you, grid, barriers
-
-
-def food_path(foods, data, snake, snake_head, astargrid, enemies):
+def food_path(foods, data, snake, snake_head, grid, enemies):
     foods = sorted(foods, key=lambda p: distance(p, snake_head))  # Sorts food list by distance to snake's head
     path = None
     f = 0
     # print(foods)
     for food in foods:
         food_coords = (food[0], food[1])
-        enemy_distance = closest(enemies, food_coords)[1]
+        enemy, enemy_distance = closest(enemies, food_coords)
         my_distance = distance(snake_head, food_coords)
         if enemy_distance < my_distance:
             continue
+        if enemy_distance == my_distance and enemy_size(enemy, data) >= len(snake['body']):
+            continue
         target = food_coords
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
+        path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path
         if len(path) <= 1:
             continue
         elif f > 100:
             continue
         elif len(path) == 2:
             print('food is close')
-            if is_threat(target, astargrid, snake, data, enemies):
+            if is_threat(target, grid, snake, data, enemies):
                 continue
             else:
                 break
@@ -187,19 +186,21 @@ def food_path(foods, data, snake, snake_head, astargrid, enemies):
     return path, f
 
 
-def kill_path(enemies, snake, snake_head, data, astargrid):
+def kill_path(enemies, snake, snake_head, data, grid):
     enemies = sorted(enemies, key=lambda p: distance(p, snake_head))  # Sort enemy list by distance to snake's head
     path = None
     # print(foods)
     for enemy in enemies:
         if enemy_size(enemy, data) >= len(snake['body']):
+            print('Enemy too big')
             continue
         else:
             target = (enemy[0], enemy[1])
-            path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path
+            path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path
             if len(path) <= 1:
+                print('Invalid path')
                 continue
-            elif f > 3:
+            elif f > 4:
                 print('f too large: ', f)
                 continue
             else:
@@ -253,6 +254,97 @@ def start():
 
     return start_response()
 
+
+@bottle.post('/move')
+def move():
+    data = bottle.request.json
+    # print(data)
+    own_snake, grid, barriers = grid_init(data)
+    
+    turn = data['turn']
+
+    print('********** MOVE ' + str(turn) + ' *************')
+    # print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
+    # print(barriers)
+
+    snake_tail = (own_snake['body'][-1]['x'], own_snake['body'][-1]['y'])
+    snake_head = (own_snake['body'][0]['x'], own_snake['body'][0]['y'])  # Coordinates for own snake's head
+
+    enemies = [(snake['body'][0]['x'], snake['body'][0]['y']) for snake in data['board']['snakes'] if snake['id'] != own_snake['id']]
+
+    if (own_snake['health'] > 80 and turn > 15) or (len(data['board']['snakes']) == 2 and own_snake['health'] > 20):  # Kill logic
+        print('HUNTING...')
+        path, result_1 = kill_path(enemies, own_snake, snake_head, data, grid)
+        if result_1:
+            print('KILL PATH FOUND')
+            new_move, result_2 = last_check(path, grid, own_snake, data, enemies)
+            if result_2:
+                path[1] = new_move
+            print('MOVING TO KILL')
+            return move_response(direction(path))
+
+    foods = []  # Tuple list of food coordinates
+    for food in data['board']['food']:
+        x = food['x']
+        y = food['y']
+        foods.append((x, y))
+
+    # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
+    # foods = sorted(data['food'], key=lambda p: distance(p, middle))
+    path, f = food_path(foods, data, own_snake, snake_head, grid, enemies)  # Food logic
+    print('Path to food: ', path)
+    if path is None or len(path) <= 1 or f > 100:
+        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path to tail
+        print("PATH TO TAIL:" + str(path))
+
+    if own_snake['health'] > 70 and len(own_snake['body']) > 30:
+        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
+        path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path to tail
+        print("PATH TO TAIL:" + str(path))
+
+    new_move, result = last_check(path, grid, own_snake, data, enemies)
+    if result:
+        print('LAST_CHECK CORRECTION: ', new_move)
+        if len(path) <= 1:
+            path.append(new_move)
+        else:
+            path[1] = new_move
+
+    if len(path) <= 1:
+        print('Survive...')
+        path = survive(own_snake, data, grid)
+
+    response = direction(path)
+    print('moving: ', response)
+    return move_response(response)
+
+
+@bottle.post('/end')
+def end():
+    data = bottle.request.json
+
+    """
+    TODO: If your snake AI was stateful,
+        clean up any stateful objects here.
+    """
+    # print(json.dumps(data))
+
+    return end_response()
+
+
+# Expose WSGI app (so gunicorn can find it)
+application = bottle.default_app()
+
+if __name__ == '__main__':
+    bottle.run(
+        application,
+        host=os.getenv('IP', '0.0.0.0'),
+        port=os.getenv('PORT', '8080'),
+        debug=os.getenv('DEBUG', True)
+    )
 
 '''
 # DATA OBJECT
@@ -366,96 +458,3 @@ def start():
     }
 
 '''
-
-
-@bottle.post('/move')
-def move():
-    data = bottle.request.json
-    # print(data)
-    own_snake, grid, barriers = grid_init(data)
-    astargrid = astarsearch.AStarGraph()
-    astargrid.barriers = barriers
-    astargrid.graph = grid
-    turn = data['turn']
-
-    print('********** MOVE ' + str(turn) + ' *************')
-    # print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
-    # print(barriers)
-
-    snake_tail = (own_snake['body'][-1]['x'], own_snake['body'][-1]['y'])
-    snake_head = (own_snake['body'][0]['x'], own_snake['body'][0]['y'])  # Coordinates for own snake's head
-
-    enemies = [(snake['body'][0]['x'], snake['body'][0]['y']) for snake in data['board']['snakes']]
-    if own_snake['health'] > 60 and turn > 10:  # Kill logic
-        print('HUNTING...')
-        path, result_1 = kill_path(enemies, own_snake, snake_head, data, astargrid)
-        if result_1:
-            print('KILL PATH FOUND')
-            new_move, result_2 = last_check(path, astargrid, own_snake, data, enemies)
-            if result_2:
-                path[1] = new_move
-            print('MOVING TO KILL')
-            return move_response(direction(path))
-
-    foods = []  # Tuple list of food coordinates
-    for food in data['board']['food']:
-        x = food['x']
-        y = food['y']
-        foods.append((x, y))
-
-    # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
-    # foods = sorted(data['food'], key=lambda p: distance(p, middle))
-    path, f = food_path(foods, data, own_snake, snake_head, astargrid, enemies)  # Food logic
-    print('Path to food: ', path)
-    if path is None or len(path) <= 1 or f > 100:
-        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
-        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
-        print("PATH TO TAIL:" + str(path))
-
-    if own_snake['health'] > 65 and turn > 30:
-        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
-        target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
-        path, f = astarsearch.AStarSearch(snake_head, target, astargrid, data)  # get A* shortest path to tail
-        print("PATH TO TAIL:" + str(path))
-
-    new_move, result = last_check(path, astargrid, own_snake, data, enemies)
-    if result:
-        print('LAST_CHECK CORRECTION: ', new_move)
-        if len(path) <= 1:
-            path.append(new_move)
-        else:
-            path[1] = new_move
-
-    if len(path) <= 1:
-        #survive()
-        print('Survive...')
-
-    response = direction(path)
-    print('moving: ', response)
-    return move_response(response)
-
-
-@bottle.post('/end')
-def end():
-    data = bottle.request.json
-
-    """
-    TODO: If your snake AI was stateful,
-        clean up any stateful objects here.
-    """
-    # print(json.dumps(data))
-
-    return end_response()
-
-
-# Expose WSGI app (so gunicorn can find it)
-application = bottle.default_app()
-
-if __name__ == '__main__':
-    bottle.run(
-        application,
-        host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '8080'),
-        debug=os.getenv('DEBUG', True)
-    )
