@@ -4,10 +4,10 @@ Main server and snake logic.
 import os
 
 import bottle
-from api import ping_response, start_response, end_response, move_response
+from app.api import ping_response, start_response, end_response, move_response
 
-from algs import *
-from utils import *
+from app.algs import *
+from app.utils import *
 
 
 def is_threat(pos, grid, snake, data, enemies):
@@ -32,26 +32,22 @@ def is_threat(pos, grid, snake, data, enemies):
             print('x2, y2: ', (x2, y2))
             print('enemies: ', enemies)
             if neighbour in enemies:  # If neighbour is enemy head
-                if enemy_size((x2, y2), data) < len(snake['body']):
+                if enemy_size(neighbour, data) < len(snake['body']):
                     # print('snake_size: ', len(snake['body']))
-                    print('Nearby enemy is smaller at ', (x2, y2))
+                    print('Nearby enemy is smaller at ', neighbour)
                     continue
                 else:
-                    print(' Nearby enemy is bigger at ', (x2, y2))
+                    print(' Nearby enemy is bigger at ', neighbour)
                     return True  # Nearby enemy is bigger
             elif neighbour == pos:  # If neighbour is suggested path (and is snake)
                 return True  # Space occupied by snake
             else:
-                print('Nearby enemy is not its head at ', (x2, y2))
+                print('Nearby enemy is not its head at ', neighbour)
                 continue  # Nearby enemy is not its head so is not threat
-        elif current_pos < 0:
-            if neighbour == pos:
-                return True
-            '''
-            elif own_snake_count > 1:
-                return True
-            '''
-        elif current_pos == 0:  # Is snake tail
+        elif current_pos < 0 and neighbour == pos:
+            return True
+
+        elif current_pos == 0 and neighbour == pos:  # Is snake tail
             enemy_head = get_enemy(pos, data)['body'][0]
             enemy_head = (enemy_head['x'], enemy_head['y'])
             if adj_food(enemy_head, data, grid):  # If enemy head near food, is threat
@@ -77,13 +73,23 @@ def survive(snake, data, grid):
     snake_head = snake_body[0]
     path.append(snake_head)
 
+    count, tails, heads = bfs(grid, data, snake_head)  # use heads
+
+    if len(tails) > 0:
+        tails = sorted(tails, key=lambda p: distance(p, snake_head))
+        for tail in tails:
+            path, f = astarsearch(snake_head, tail, grid, data)
+            if len(path) >= 2:
+                return path
+        path = []
+
     neighbours = get_vertex_neighbours(snake_head, data, grid)
     for neighbour in neighbours:
         y2 = neighbour[1]
         x2 = neighbour[0]
-        if grid[y2][x2] < 0:
+        if grid[y2][x2] < 0:  # If neighbour is snake body
             continue
-        elif neighbour in snake_body:  # If new_move is self-collision, try another move
+        elif neighbour in snake_body:  # If neighbour means self-collision, try another move
             continue
         else:  # Suitable move
             print('new_move is suitable', neighbour)
@@ -92,7 +98,7 @@ def survive(snake, data, grid):
         largest = 0
         best_move = None
         for new_move in new_moves:
-            count = bfs(grid, data, new_move)
+            count = bfs(grid, data, new_move)[0]
             print('count: ', count)
             print('new_move: ', new_move)
             if count > largest:
@@ -143,7 +149,7 @@ def last_check(path, grid, snake, data, enemies):
         largest = 0
         best_move = None
         for neighbour in new_moves:
-            count = bfs(grid, data, neighbour)
+            count = bfs(grid, data, neighbour)[0]
             print('count: ', count)
             print('neighbour: ', neighbour)
             if count > largest:
@@ -191,7 +197,11 @@ def kill_path(enemies, snake, snake_head, data, grid):
     path = None
     # print(foods)
     for enemy in enemies:
-        if enemy_size(enemy, data) >= len(snake['body']):
+        enemysize = enemy_size(enemy, data)
+        if adj_food(enemy, data, grid):
+            print('Target close to food')
+            enemysize = enemysize + 1
+        if enemysize >= len(snake['body']):
             print('Enemy too big')
             continue
         else:
@@ -200,7 +210,7 @@ def kill_path(enemies, snake, snake_head, data, grid):
             if len(path) <= 1:
                 print('Invalid path')
                 continue
-            elif f > 4:
+            elif f > 3:
                 print('f too large: ', f)
                 continue
             else:

@@ -1,7 +1,7 @@
 """
 Utilities file for snake logic.
 """
-import algs
+import app.algs
 
 NAME = "ACHultman / Fer-de-lance"
 FOOD = 2
@@ -35,7 +35,12 @@ def grid_init(data):
             for coord in snake['body']:
                 coord = (coord['x'], coord['y'])
 
-                if coord == (snake['body'][0]['x'], snake['body'][0]['y']):
+                if coord == (snake['body'][-1]['x'], snake['body'][-1]['y']):
+                    if data['turn'] < 2 or adj_food(enemy_head, data, grid):
+                        grid[coord[1]][coord[0]] = SNAKE
+                    grid[coord[1]][coord[0]] = TAIL
+                    continue
+                elif coord == (snake['body'][0]['x'], snake['body'][0]['y']):
                     enemy_head = coord
                     for dx, dy in [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)]:
                         x2 = coord[0] + dx
@@ -45,20 +50,17 @@ def grid_init(data):
                         # barriers.append((x2, y2))
                         grid[coord[1]][coord[0]] = HEAD
                     continue
-                elif coord == (snake['body'][-1]['x'], snake['body'][-1]['y']):
-                    if adj_food(enemy_head, data, grid):
-                        grid[coord[1]][coord[0]] = SNAKE
-                    grid[coord[1]][coord[0]] = TAIL
-                    continue
                 else:
                     grid[coord[1]][coord[0]] = SNAKE  # Documents other snake's bodies for later evasion.
-                    barriers.append((coord[0], coord[1]))
+                    # barriers.append((coord[0], coord[1]))
 
         else:
             for coord in snake['body']:  # Skip adding own tail to barriers in this loop
                 if coord is not snake['body'][-1]:
                     grid[coord['y']][coord['x']] = SNAKE
-                    barriers.append((coord['x'], coord['y']))
+                    # barriers.append((coord['x'], coord['y']))
+                else:
+                    grid[coord['y']][coord['x']] = TAIL
 
     for food in json_data_board['food']:  # For loop for marking all food on grid.
         grid[food['y']][food['x']] = FOOD
@@ -145,14 +147,20 @@ def enemy_size(pos, data):
 
 
 def is_dead_end(pos, grid, data, snake):
-    if algs.bfs(grid, data, pos) <= len(snake['body']) + 1:
+    tail_vals = []
+    for tail in app.algs.bfs(grid, data, pos)[1]:
+        tail_vals.append(grid[tail[1]][tail[0]])
+    if TAIL in tail_vals:
+        print('is_dead_end found tail, returning false')
+        return False
+    if app.algs.bfs(grid, data, pos)[0] <= len(snake['body']) + 1:
         return True
     else:
         return False
 
 
-def adj_food(pos, data, grid):
-    neighbours = algs.get_vertex_neighbours(pos, data, grid)
+def adj_food(pos, data, grid):  # TODO Recognize snake that has just eaten food (its tail stays stationary)
+    neighbours = app.algs.get_vertex_neighbours(pos, data, grid)
     for neighbour in neighbours:
         if grid[neighbour[1]][neighbour[0]] == 2:
             return True

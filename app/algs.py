@@ -1,7 +1,7 @@
 """
 Edited A* search code from https://rosettacode.org/wiki/A*_search_algorithm#Python
 """
-from utils import *
+from app.utils import *
 from collections import deque
 
 
@@ -102,17 +102,25 @@ def astarsearch(start, end, grid, data):
 
 def bfs(grid, data, start):
     count = 1
+    heads = []
+    tails = []
     queue = deque([start])
+    if grid[start[1]][start[0]] == 0:
+        tails.append(start)
     visited = set()
     while queue:
         curr_node = queue.popleft()
         visited.add(curr_node)
         neighbours = get_vertex_neighbours(curr_node, data, grid)
         for neighbour in neighbours:
+            if grid[neighbour[1]][neighbour[0]] == -2:
+                heads.append(neighbour)
             if grid[neighbour[1]][neighbour[0]] < 0:
                 continue
+            if grid[neighbour[1]][neighbour[0]] == 0:  # TODO also count heads
+                tails.append(neighbour)
             if neighbour not in visited:
                 count = count + 1
                 visited.add(neighbour)
                 queue.append(neighbour)
-    return count
+    return count, tails, heads
