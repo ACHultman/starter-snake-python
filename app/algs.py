@@ -1,8 +1,29 @@
 """
 Edited A* search code from https://rosettacode.org/wiki/A*_search_algorithm#Python
 """
-from utils import *
+from app.utils import *
 from collections import deque
+
+
+def get_vertex_neighbours(pos, data, grid):
+    n = []
+    # Moves allowed are Manhattan-style
+    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+        x2 = pos[0] + dx
+        y2 = pos[1] + dy
+        if not in_bounds(x2, y2, data):
+            continue
+        elif grid[y2][x2] == -1:
+            continue
+        n.append((x2, y2))
+    return n
+
+
+def heuristic(start, goal):
+    # Use Manhattan distance heuristic
+    dx = abs(start[0] - goal[0])
+    dy = abs(start[1] - goal[1])
+    return dx + dy
 
 
 class AStarGraph(object):
@@ -14,48 +35,17 @@ class AStarGraph(object):
         self.graph = [[]]
         self.barriers = []
 
-    def heuristic(self, start, goal):
-        # Use Manhattan distance heuristic
-        # print('HEURISTIC')
-        # print('start: ', start)
-        # print('goal: ', goal)
-        dx = abs(start[0] - goal[0])
-        dy = abs(start[1] - goal[1])
-        # print('dx + dy = ', dx+dy)
-        # print('')
-        return dx + dy
 
-    def get_vertex_neighbours(self, pos, data, grid):
-        n = []
-        # Moves allowed are Manhattan-style
-        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-            x2 = pos[0] + dx
-            y2 = pos[1] + dy
-            if not in_bounds(x2, y2, data):
-                continue
-            elif grid.graph[y2][x2] == -1:
-                continue
-            n.append((x2, y2))
-        return n
-
-    def move_cost(self, b):
-        # print('self.barriers: ', self.barriers)
-        for barrier in self.barriers:
-            if b == barrier:
-                return 100000  # Extremely high cost to enter barrier squares
-        return 1  # Normal movement cost
-
-
-def AStarSearch(start, end, graph, data):
+def astarsearch(start, end, grid, data):
     # print('*********ASTARSEARCH***********')
     # print('start: ', start)
     # print('end: ', end)
-    # print('barriers: ', graph.barriers)
+    # print('barriers: ', grid.barriers)
     G = {}  # Actual movement cost to each position from the start position
     F = {}  # Estimated movement cost of start to end going via this position
     # Initialize starting values
     G[start] = 0
-    F[start] = graph.heuristic(start, end)
+    F[start] = heuristic(start, end)
 
     closedVertices = set()
     openVertices = set([start])
@@ -87,7 +77,7 @@ def AStarSearch(start, end, graph, data):
         closedVertices.add(current)
 
         # Update scores for vertices near the current position
-        for neighbour in graph.get_vertex_neighbours(current, data, graph):
+        for neighbour in get_vertex_neighbours(current, data, grid):
             if neighbour in closedVertices:
                 continue  # We have already processed this node exhaustively
             candidateG = G[current] + 1
@@ -97,13 +87,11 @@ def AStarSearch(start, end, graph, data):
 
             elif candidateG >= G[neighbour]:
                 continue  # This G score is worse than previously found
-            elif candidateG > 100:
-                continue
 
             # Adopt this G score
             cameFrom[neighbour] = current
             G[neighbour] = candidateG
-            H = graph.heuristic(neighbour, end)
+            H = heuristic(neighbour, end)
             F[neighbour] = G[neighbour] + H
             # print('neighbour: :', neighbour)
             # print('F[neighbour]', F[neighbour])
@@ -114,16 +102,25 @@ def AStarSearch(start, end, graph, data):
 
 def bfs(grid, data, start):
     count = 1
+    heads = []
+    tails = []
     queue = deque([start])
+    if grid[start[1]][start[0]] == 0:
+        tails.append(start)
     visited = set()
     while queue:
         curr_node = queue.popleft()
         visited.add(curr_node)
-
-        neighbours = grid.get_vertex_neighbours(curr_node, data, grid)
+        neighbours = get_vertex_neighbours(curr_node, data, grid)
         for neighbour in neighbours:
+            if grid[neighbour[1]][neighbour[0]] == -2:
+                heads.append(neighbour)
+            if grid[neighbour[1]][neighbour[0]] < 0:
+                continue
+            if grid[neighbour[1]][neighbour[0]] == 0:  # TODO also count heads
+                tails.append(neighbour)
             if neighbour not in visited:
                 count = count + 1
                 visited.add(neighbour)
                 queue.append(neighbour)
-    return count
+    return count, tails, heads
