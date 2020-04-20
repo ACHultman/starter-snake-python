@@ -169,9 +169,9 @@ def food_path(foods, data, snake, snake_head, grid, enemies):
         food_coords = (food[0], food[1])
         enemy, enemy_distance = closest(enemies, food_coords)
         my_distance = distance(snake_head, food_coords)
-        if enemy_distance < my_distance:
+        if enemy_distance < my_distance and enemy_size(enemy, data) > len(snake['body']):
             continue
-        if enemy_distance == my_distance and enemy_size(enemy, data) >= len(snake['body']):
+        if enemy_distance == my_distance and enemy_size(enemy, data) >= len(snake['body']) + 2:
             continue
         target = food_coords
         path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path
@@ -282,7 +282,7 @@ def move():
 
     enemies = [(snake['body'][0]['x'], snake['body'][0]['y']) for snake in data['board']['snakes'] if snake['id'] != own_snake['id']]
 
-    if (own_snake['health'] > 80 and turn > 15) or (len(data['board']['snakes']) == 2 and own_snake['health'] > 20):  # Kill logic
+    if (own_snake['health'] > 50 and turn > 15) or (len(data['board']['snakes']) == 2 and own_snake['health'] > 30):  # Kill logic
         print('HUNTING...')
         path, result_1 = kill_path(enemies, own_snake, snake_head, data, grid)
         if result_1:
@@ -309,7 +309,7 @@ def move():
         path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(path))
 
-    if own_snake['health'] > 70 and len(own_snake['body']) > 30:
+    if own_snake['health'] > 70 and len(own_snake['body']) > 35:
         # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (snake_tail[0], snake_tail[1])  # Make target snake's own tail
         path, f = astarsearch(snake_head, target, grid, data)  # get A* shortest path to tail
