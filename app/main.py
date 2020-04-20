@@ -251,16 +251,14 @@ def ping():
     return ping_response()
 
 
+en_size_dict = {}
+
+
 @bottle.post('/start')
 def start():
     data = bottle.request.json
 
-    """
-    TODO: If you intend to have a stateful snake AI,
-            initialize your snake state here using the
-            request's data if necessary.
-    """
-    # print(json.dumps(data))
+    init_enemy_size(data)
 
     return start_response()
 
@@ -270,7 +268,7 @@ def move():
     data = bottle.request.json
     # print(data)
     own_snake, grid, barriers = grid_init(data)
-    
+
     turn = data['turn']
 
     print('********** MOVE ' + str(turn) + ' *************')
@@ -280,9 +278,11 @@ def move():
     snake_tail = (own_snake['body'][-1]['x'], own_snake['body'][-1]['y'])
     snake_head = (own_snake['body'][0]['x'], own_snake['body'][0]['y'])  # Coordinates for own snake's head
 
-    enemies = [(snake['body'][0]['x'], snake['body'][0]['y']) for snake in data['board']['snakes'] if snake['id'] != own_snake['id']]
+    enemies = [(snake['body'][0]['x'], snake['body'][0]['y']) for snake in data['board']['snakes'] if
+               snake['id'] != own_snake['id']]
 
-    if (own_snake['health'] > 50 and turn > 15) or (len(data['board']['snakes']) == 2 and own_snake['health'] > 30):  # Kill logic
+    if (own_snake['health'] > 50 and turn > 15) or (
+            len(data['board']['snakes']) == 2 and own_snake['health'] > 30):  # Kill logic
         print('HUNTING...')
         path, result_1 = kill_path(enemies, own_snake, snake_head, data, grid)
         if result_1:
@@ -291,6 +291,7 @@ def move():
             if result_2:
                 path[1] = new_move
             print('MOVING TO KILL')
+            update_enemy_size(data)
             return move_response(direction(path))
 
     foods = []  # Tuple list of food coordinates
@@ -329,6 +330,7 @@ def move():
 
     response = direction(path)
     print('moving: ', response)
+    update_enemy_size(data)
     return move_response(response)
 
 

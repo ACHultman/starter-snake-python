@@ -9,6 +9,7 @@ WALKABLE = 1
 SNAKE = -1
 HEAD = -2
 TAIL = 0
+en_size_dict = {}
 
 
 def in_bounds(x, y, data):
@@ -36,9 +37,10 @@ def grid_init(data):
                 coord = (coord['x'], coord['y'])
 
                 if coord == (snake['body'][-1]['x'], snake['body'][-1]['y']):
-                    if data['turn'] < 2 or adj_food(enemy_head, data, grid):
+                    if data['turn'] < 2 or just_ate(coord, data):
                         grid[coord[1]][coord[0]] = SNAKE
-                    grid[coord[1]][coord[0]] = TAIL
+                    else:
+                        grid[coord[1]][coord[0]] = TAIL
                     continue
                 elif coord == (snake['body'][0]['x'], snake['body'][0]['y']):
                     enemy_head = coord
@@ -165,3 +167,28 @@ def adj_food(pos, data, grid):  # TODO Recognize snake that has just eaten food 
         if grid[neighbour[1]][neighbour[0]] == 2:
             return True
     return False
+
+
+def init_enemy_size(data):
+    snakes = data['board']['snakes']
+    global en_size_dict
+    en_size_dict = {snake['id']: len(snake['body']) for snake in snakes}
+    print('Initialized en_size_dict')
+
+
+def update_enemy_size(data):
+    global en_size_dict
+    for snake in data['board']['snakes']:
+        snake_size = len(snake['body'])
+        if en_size_dict[snake['id']] != snake_size:
+            en_size_dict[snake['id']] = snake_size
+            print(snake['name'] + 'is now ' + str(snake_size))
+
+
+def just_ate(pos, data):
+    global en_size_dict
+    snake = get_enemy(pos, data)
+    cur_size = len(snake['body'])
+    prev_size = en_size_dict[snake['id']]
+    print('just_ate: ' + str(cur_size) + ' ' + str(prev_size))
+    return cur_size != prev_size
