@@ -23,6 +23,9 @@ def find_heads(own_snake, data):
 
 
 class Enemy:
+    """
+    A class for enemy snakes
+    """
     def __init__(self, own_snake, data):
         self.size_dict = init_enemy_size(data)
         self.heads = find_heads(own_snake, data)
@@ -75,3 +78,14 @@ class Enemy:
             return len(snake['body'])
         else:
             raise RuntimeError('No snake found in enemy_size')
+
+    def largest_size(self):
+        """
+        Finds largest size
+        :return: size (int)
+        """
+        largest = 0
+        for size in self.size_dict.values():
+            if size > largest:
+                largest = size
+        return largest

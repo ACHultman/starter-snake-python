@@ -9,8 +9,9 @@ TAIL = 0
 def in_bounds(x, y, data):
     """
     Checks if given x,y coordinate is in the grid.
-    :param x:
-    :param y:
+    :param data: Data received
+    :param x: x coordinate on graph
+    :param y: y coordinate on graph
     :return: True if coordinate is in the bounds
     """
     limit = data['board']['height'] - 1
@@ -57,7 +58,6 @@ def create_grid(data, height, enemies):
             for coord in snake['body']:  # Skip adding own tail to barriers in this loop
                 if coord is not snake['body'][-1]:
                     grid[coord['y']][coord['x']] = SNAKE
-                    # barriers.append((coord['x'], coord['y']))
                 else:
                     grid[coord['y']][coord['x']] = TAIL
 
@@ -68,6 +68,9 @@ def create_grid(data, height, enemies):
 
 
 class Board:
+    """
+    A class for the board itself.
+    """
     def __init__(self, data, enemies):
         self.height = data['board']['height']
         self.width = data['board']['width']

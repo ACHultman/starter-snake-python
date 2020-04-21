@@ -25,15 +25,12 @@ def is_threat(pos, grid, snake, data, enemies):
         y2 = neighbour[1]
         x2 = neighbour[0]
         current_pos = grid[y2][x2]
-        # print('current_pos: ', current_pos)
-        # print('snake_body: ', snake_body)
         if current_pos < 0 and neighbour not in snake.body:  # If position is snake and is not mine
             print('oh no')
             print('x2, y2: ', (x2, y2))
             print('enemies: ', enemies.heads)
             if neighbour in enemies.heads:  # If neighbour is enemy head
                 if enemies.enemy_size(neighbour) < snake.size:
-                    # print('snake_size: ', len(snake['body']))
                     print('Nearby enemy is smaller at ', neighbour)
                     continue
                 else:
@@ -62,6 +59,13 @@ def is_threat(pos, grid, snake, data, enemies):
 
 
 def survive(snake, data, grid):
+    """
+    Last effort to survive.
+    :param snake:
+    :param data:
+    :param grid:
+    :return: optimal path.
+    """
     path = []
     new_moves = []
 
@@ -108,13 +112,13 @@ def survive(snake, data, grid):
 
 def last_check(path, grid, snake, data, enemies):
     """
-
+    Performs a last check of proposed path, edits if necessary
     :param enemies:
     :param path:
     :param snake:
     :param grid:
     :param data:
-    :return:
+    :return: True and new move, or false and old move
     """
     new_moves = []
 
@@ -153,10 +157,19 @@ def last_check(path, grid, snake, data, enemies):
 
 
 def food_path(foods, data, snake, grid, enemies):
-    foods.coords = sorted(foods.coords, key=lambda p: distance(p, snake.head))  # Sorts food list by distance to snake's head
+    """
+    Find beest path to food
+    :param foods:
+    :param data:
+    :param snake:
+    :param grid:
+    :param enemies:
+    :return: Path, if any
+    """
+    foods.coords = sorted(foods.coords, key=lambda p: distance(p, snake.head))  # Sorts food list by distance to
+    # snake's head
     path = None
     f = 0
-    # print(foods)
     for food in foods.coords:
         enemy, enemy_distance = closest(enemies.heads, food)
         my_distance = distance(snake.head, food)
@@ -184,10 +197,17 @@ def food_path(foods, data, snake, grid, enemies):
 
 
 def kill_path(enemies, snake, data, grid):
+    """
+    Find best path to enemy
+    :param enemies:
+    :param snake:
+    :param data:
+    :param grid:
+    :return: path, if any
+    """
     enemy_coords = sorted(enemies.heads, key=lambda p: distance(p, snake.head))  # Sort enemy list by distance to
     # snake's head
     path = None
-    # print(foods)
     for enemy in enemy_coords:
         enemy_size = enemies.enemy_size(enemy)
         if adj_food(enemy, data, grid):
@@ -254,6 +274,10 @@ def start():
 
 @bottle.post('/move')
 def move():
+    """
+    Main logic for moving.
+    :return: direction to move.
+    """
     data = bottle.request.json
     game_foods = Food(data)
     own_snake = Snake(data)
@@ -261,7 +285,6 @@ def move():
     game_board = Board(data, enemies)
 
     print('********** MOVE ' + str(game_board.turn) + ' *************')
-    # print("Snake head x: " + str(snake['body'][0]['x']) + " snake head y: " + str(snake['body'][0]['y']))
 
     if (own_snake.health > 50 and game_board.turn > 15) or (
             len(data['board']['snakes']) == 2 and own_snake.health > 30):  # Kill logic
@@ -276,19 +299,15 @@ def move():
             enemies.update_enemy_size()
             return move_response(direction(path))
 
-    # middle = (data['board']['width'] / 2, data['board']['height'] / 2)
-    # foods = sorted(data['food'], key=lambda p: distance(p, middle))
     path, f = food_path(game_foods, data, own_snake, game_board.grid, enemies)  # Food logic
     print('Path to food: ', path)
 
     if path is None or len(path) <= 1 or f > 100:
-        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
         target = (own_snake.tail[0], own_snake.tail[1])  # Make target snake's own tail
         path, f = astarsearch(own_snake.head, target, game_board.grid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(path))
 
-    if own_snake.health > 70 and own_snake.size > 35:
-        # print("Snake Tail x: " + str(snake_tail[0]) + " y: " + str(snake_tail[1]))
+    if own_snake.health > 70 and own_snake.size > enemies.largest_size():
         target = (own_snake.tail[0], own_snake.tail[1])  # Make target snake's own tail
         path, f = astarsearch(own_snake.head, target, game_board.grid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(path))
@@ -314,12 +333,6 @@ def move():
 @bottle.post('/end')
 def end():
     data = bottle.request.json
-
-    """
-    TODO: If your snake AI was stateful,
-        clean up any stateful objects here.
-    """
-    # print(json.dumps(data))
 
     return end_response()
 

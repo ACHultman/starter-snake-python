@@ -11,6 +11,9 @@ def get_body(data):
 
 
 class Snake:
+    """
+    A class for this snake and its data.
+    """
     def __init__(self, data):
         self.name = data['you']['name']
         self.id = data['you']['id']

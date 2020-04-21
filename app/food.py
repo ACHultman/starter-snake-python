@@ -13,6 +13,9 @@ def list_foods(data):
 
 
 class Food:
+    """
+    A class for food on the board.
+    """
     def __init__(self, data):
         self.coords = list_foods(data)
         self.food_count = len(self.coords)
