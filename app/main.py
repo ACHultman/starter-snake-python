@@ -153,7 +153,7 @@ def last_check(path, grid, snake, data, enemies):
                 best_move = neighbour
         return best_move, True
 
-    return path[1], False
+    return path[1], False # TODO Fix bug that ends here without a path
 
 
 def food_path(foods, data, snake, grid, enemies):

@@ -71,7 +71,7 @@ def is_dead_end(pos, grid, data, snake):
     if TAIL in tail_vals:
         print('is_dead_end found tail, returning false')
         return False
-    if app.algs.bfs(grid, data, pos)[0] <= snake.size + 1:
+    if app.algs.bfs(grid, data, pos)[0] <= snake.size + 1:  # TODO Account for moving tail
         return True
     else:
         return False
@@ -83,4 +83,3 @@ def adj_food(pos, data, grid):  # TODO Recognize snake that has just eaten food 
         if grid[neighbour[1]][neighbour[0]] == 2:
             return True
     return False
-
