@@ -1,8 +1,9 @@
 """
 Edited A* search code from https://rosettacode.org/wiki/A*_search_algorithm#Python
 """
-from app.utils import *
 from collections import deque
+
+from app.board import *
 
 
 def get_vertex_neighbours(pos, data, grid):
