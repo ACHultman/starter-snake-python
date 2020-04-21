@@ -74,6 +74,7 @@ def is_dead_end(pos, grid, data, snake):
         return False
     if area_size <= snake.size + 1:  # TODO Account for moving tail
         # Look backwards from tail to find first body part on edge of area
+
         return True
     else:
         return False
