@@ -48,12 +48,7 @@ class Enemy:
         Finds if given snake has just eaten this turn.
         :param pos:
         :return: True if size has changed (snake has eaten)
-        """'''
-        snake = self.get_enemy(pos)
-        cur_size = len(snake['body'])
-        prev_size = self.size_dict[snake['id']]
-        print('just_ate: ' + str(cur_size) + ' ' + str(prev_size))
-        return cur_size != prev_size'''
+        """
         ate = True
         snake = self.get_enemy(pos)
         snake_length = len(snake["body"])
