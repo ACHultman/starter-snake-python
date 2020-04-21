@@ -61,12 +61,13 @@ def create_grid(data, height, enemies):
 
         else:  # Snake is me
             for coord in snake['body']:
+                coord = (coord['x'], coord['y'])
                 if coord is not snake['body'][-1]:
-                    grid[coord['y']][coord['x']] = SNAKE
+                    grid[coord[1]][coord[0]] = SNAKE
                 elif enemies.just_ate(coord):
-                    grid[coord['y']][coord['x']] = SNAKE
+                    grid[coord[1]][coord[0]] = SNAKE
                 else:
-                    grid[coord['y']][coord['x']] = TAIL
+                    grid[coord[1]][coord[0]] = TAIL
 
     return grid
 
