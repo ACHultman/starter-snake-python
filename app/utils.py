@@ -66,19 +66,21 @@ def direction(path):
 
 def is_dead_end(pos, grid, data, snake):
     tail_vals = []
-    for tail in app.algs.bfs(grid, data, pos)[1]:
+    area_size, tails, heads = app.algs.bfs(grid, data, pos)
+    for tail in tails:
         tail_vals.append(grid[tail[1]][tail[0]])
     if TAIL in tail_vals:
         print('is_dead_end found tail, returning false')
         return False
-    if app.algs.bfs(grid, data, pos)[0] <= snake.size + 1:  # TODO Account for moving tail
+    if area_size <= snake.size + 1:  # TODO Account for moving tail
+        # Look backwards from tail to find first body part on edge of area
         return True
     else:
         return False
 
 
-def adj_food(pos, data, grid):  # TODO Recognize snake that has just eaten food (its tail stays stationary)
-    neighbours = app.algs.get_vertex_neighbours(pos, data, grid)
+def adj_food(pos, data, grid):
+    neighbours = app.algs.get_vertex_neighbours(pos, data, grid, panic=False)
     for neighbour in neighbours:
         if grid[neighbour[1]][neighbour[0]] == 2:
             return True

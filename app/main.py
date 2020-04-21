@@ -19,7 +19,7 @@ def is_threat(pos, grid, snake, data, enemies):
     Returns true if other >= snakes (threat) near target
     """
 
-    neighbours = get_vertex_neighbours(pos, data, grid)
+    neighbours = get_vertex_neighbours(pos, data, grid, panic=False)
     neighbours.append(pos)
     for neighbour in neighbours:
         y2 = neighbour[1]
@@ -83,11 +83,11 @@ def survive(snake, data, grid):
                 return path
         path = []
 
-    neighbours = get_vertex_neighbours(snake.head, data, grid)
+    neighbours = get_vertex_neighbours(snake.head, data, grid, panic=True)
     for neighbour in neighbours:
         y2 = neighbour[1]
         x2 = neighbour[0]
-        if grid[y2][x2] < 0:  # If neighbour is snake body
+        if grid[y2][x2] in [SNAKE, HEAD]:  # If neighbour is snake body
             continue
         elif neighbour in snake.body:  # If neighbour means self-collision, try another move
             continue
@@ -106,7 +106,8 @@ def survive(snake, data, grid):
                 best_move = new_move
         path.append(best_move)
         return path
-    print('Survive failed...')
+    print('Survive failing...')
+
     return path
 
 
@@ -126,7 +127,7 @@ def last_check(path, grid, snake, data, enemies):
         del snake.body[-1]
 
     if len(path) <= 1 or is_threat(path[1], grid, snake, data, enemies) or path[1] in snake.body:
-        neighbours = get_vertex_neighbours(snake.head, data, grid)
+        neighbours = get_vertex_neighbours(snake.head, data, grid, panic=False)
         for neighbour in neighbours:
             print('neighbour: ', neighbour)
             if is_threat(neighbour, grid, snake, data, enemies):  # If still dangerous, try another move
@@ -145,20 +146,27 @@ def last_check(path, grid, snake, data, enemies):
         largest = 0
         best_move = None
         for neighbour in new_moves:
-            count = bfs(grid, data, neighbour)[0]
+            count, tails, heads = bfs(grid, data, neighbour)
             print('count: ', count)
             print('neighbour: ', neighbour)
             if count > largest:
                 largest = count
                 best_move = neighbour
+            if tails:  # Probably stuck with enemy tail nearby
+                tails = sorted(tails, key=lambda p: distance(p, snake.head))
+                path, f = astarsearch(snake.head, tails[0], grid, data)
+                if not path:
+                    continue
+                return path[1], True
+
         return best_move, True
 
-    return path[1], False # TODO Fix bug that ends here without a path
+    return path[1], False  # TODO Fix bug that ends here without a path
 
 
 def food_path(foods, data, snake, grid, enemies):
     """
-    Find beest path to food
+    Find best path to food
     :param foods:
     :param data:
     :param snake:
