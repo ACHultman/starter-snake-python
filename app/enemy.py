@@ -51,6 +51,8 @@ class Enemy:
         """
         ate = True
         snake = self.get_enemy(pos)
+        if not snake:
+            return False
         snake_length = len(snake["body"])
         if snake_length >= 3:
             tail = snake["body"][-1]

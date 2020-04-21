@@ -5,8 +5,15 @@ from collections import deque
 
 from app.board import *
 
+FOOD = 2
+WALKABLE = 1
+SNAKE = -1
+HEAD = -2
+ADJ_HEAD = -3
+TAIL = 0
 
-def get_vertex_neighbours(pos, data, grid):
+
+def get_vertex_neighbours(pos, data, grid, panic):
     n = []
     # Moves allowed are Manhattan-style
     for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -14,7 +21,9 @@ def get_vertex_neighbours(pos, data, grid):
         y2 = pos[1] + dy
         if not in_bounds(x2, y2, data):
             continue
-        elif grid[y2][x2] == -1:
+        elif panic and grid[y2][x2] in [SNAKE, HEAD]:
+            continue
+        elif not panic and grid[y2][x2] in [SNAKE, ADJ_HEAD, HEAD]:
             continue
         n.append((x2, y2))
     return n
@@ -41,7 +50,6 @@ def astarsearch(start, end, grid, data):
     # print('*********ASTARSEARCH***********')
     # print('start: ', start)
     # print('end: ', end)
-    # print('barriers: ', grid.barriers)
     G = {}  # Actual movement cost to each position from the start position
     F = {}  # Estimated movement cost of start to end going via this position
     # Initialize starting values
@@ -78,7 +86,7 @@ def astarsearch(start, end, grid, data):
         closedVertices.add(current)
 
         # Update scores for vertices near the current position
-        for neighbour in get_vertex_neighbours(current, data, grid):
+        for neighbour in get_vertex_neighbours(current, data, grid, panic=False):
             if neighbour in closedVertices:
                 continue  # We have already processed this node exhaustively
             candidateG = G[current] + 1
@@ -112,13 +120,13 @@ def bfs(grid, data, start):
     while queue:
         curr_node = queue.popleft()
         visited.add(curr_node)
-        neighbours = get_vertex_neighbours(curr_node, data, grid)
+        neighbours = get_vertex_neighbours(curr_node, data, grid, panic=False)
         for neighbour in neighbours:
-            if grid[neighbour[1]][neighbour[0]] == -2:
+            if grid[neighbour[1]][neighbour[0]] == HEAD:
                 heads.append(neighbour)
             if grid[neighbour[1]][neighbour[0]] < 0:
                 continue
-            if grid[neighbour[1]][neighbour[0]] == 0:  # TODO also count heads
+            if grid[neighbour[1]][neighbour[0]] == TAIL:  # TODO also count heads
                 tails.append(neighbour)
             if neighbour not in visited:
                 count = count + 1
