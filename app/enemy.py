@@ -26,6 +26,7 @@ class Enemy:
     """
     A class for enemy snakes
     """
+
     def __init__(self, own_snake, data):
         self.size_dict = init_enemy_size(data)
         self.heads = find_heads(own_snake, data)
@@ -48,11 +49,19 @@ class Enemy:
         :param pos:
         :return: True if size has changed (snake has eaten)
         """
+        ate = True
         snake = self.get_enemy(pos)
-        cur_size = len(snake['body'])
-        prev_size = self.size_dict[snake['id']]
-        print('just_ate: ' + str(cur_size) + ' ' + str(prev_size))
-        return cur_size != prev_size
+        snake_length = len(snake["body"])
+        if snake_length >= 3:
+            tail = snake["body"][-1]
+            tail_body = snake["body"][-2]
+            if tail != tail_body:
+                print("Snake didn't eat")
+                ate = False
+            else:
+                print("Snake ate")
+                ate = True
+        return ate
 
     def get_enemy(self, pos):
         """
