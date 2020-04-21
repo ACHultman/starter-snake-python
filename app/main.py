@@ -173,6 +173,8 @@ def food_path(foods, data, snake, grid, enemies):
     for food in foods.coords:
         enemy, enemy_distance = closest(enemies.heads, food)
         my_distance = distance(snake.head, food)
+        if enemy_distance < 2 < my_distance:
+            continue
         if enemy_distance < my_distance and enemies.enemy_size(enemy) > snake.size:
             continue
         if enemy_distance == my_distance and enemies.enemy_size(enemy) >= snake.size + 2:
@@ -222,7 +224,7 @@ def kill_path(enemies, snake, data, grid):
             if len(path) <= 1:
                 print('Invalid path')
                 continue
-            elif f > 3:
+            elif f > 2:
                 print('f too large: ', f)
                 continue
             else:
