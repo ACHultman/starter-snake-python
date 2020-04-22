@@ -74,9 +74,6 @@ def create_grid(data, height, enemies):
                 else:
                     grid[coord[1]][coord[0]] = TAIL
 
-    for x in grid:
-        print(*x, sep=' ')
-
     return grid
 
 
