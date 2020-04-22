@@ -1,3 +1,7 @@
+from app.algs import *
+from app.utils import *
+
+
 def init_enemy_size(data):
     """
     Initializes enemy size dictionary
@@ -49,9 +53,10 @@ class Enemy:
         :param pos:
         :return: True if size has changed (snake has eaten)
         """
-        ate = True
+        ate = False
         snake = self.get_enemy(pos)
         if not snake:
+            print('just_ate no snake found')
             return False
         snake_length = len(snake["body"])
         if snake_length >= 3:
@@ -100,3 +105,22 @@ class Enemy:
             if size > largest:
                 largest = size
         return largest
+
+    def next_to_food(self, pos, data, grid):
+        snake = self.get_enemy(pos)
+        if not snake:
+            return False
+        snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
+        if adj_food(snake_head, data, grid):
+            return True
+        else:
+            return False
+
+    def find_adj_enemy(self, pos, data, grid):
+        neighbours = get_vertex_neighbours(pos, data, grid)
+        for neighbour in neighbours:
+            snake = self.get_enemy(neighbour)
+            if snake:
+                return snake
+        print('No adj enemy found')
+        return None

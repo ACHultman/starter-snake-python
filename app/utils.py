@@ -72,17 +72,28 @@ def is_dead_end(pos, grid, data, snake):
     if TAIL in tail_vals:
         print('is_dead_end found tail, returning false')
         return False
-    if area_size <= snake.size + 1:  # TODO Account for moving tail
+    elif area_size <= snake.size + 1:  # TODO Account for moving tail
         # Look backwards from tail to find first body part on edge of area
-
+        print('Looks like dead-end, size: ', area_size)
         return True
     else:
+        print('No dead end found at ', pos)
         return False
 
 
 def adj_food(pos, data, grid):
-    neighbours = app.algs.get_vertex_neighbours(pos, data, grid, panic=False)
+    neighbours = app.algs.get_vertex_neighbours(pos, data, grid)
     for neighbour in neighbours:
         if grid[neighbour[1]][neighbour[0]] == 2:
             return True
     return False
+
+
+def is_adjacent(coord, snake_head, data, grid):
+    neighbours = app.algs.get_vertex_neighbours(coord, data, grid)
+    if snake_head in neighbours:
+        print('Head next to tail')
+        return True
+    else:
+        return False
+
