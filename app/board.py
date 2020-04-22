@@ -6,6 +6,8 @@ HEAD = -2
 ADJ_HEAD = -3
 TAIL = 0
 
+from app.utils import *
+
 
 def in_bounds(x, y, data):
     """
@@ -43,7 +45,8 @@ def create_grid(data, height, enemies):
                 coord = (coord['x'], coord['y'])
 
                 if coord == (snake['body'][-1]['x'], snake['body'][-1]['y']):  # If coord is tail
-                    if data['turn'] < 2 or enemies.just_ate(coord):  # If turn<2 or enemy just ate/grew
+                    if data['turn'] < 2 or enemies.just_ate(coord):  # If turn<2 or
+                        # enemy just ate/grew
                         grid[coord[1]][coord[0]] = SNAKE  # Consider the tail a snake body
                     else:
                         grid[coord[1]][coord[0]] = TAIL  # Else mark it as a snake tail
@@ -60,14 +63,19 @@ def create_grid(data, height, enemies):
                     grid[coord[1]][coord[0]] = SNAKE  # Documents other snake's bodies for later evasion.
 
         else:  # Snake is me
+            snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
             for coord in snake['body']:
                 coord = (coord['x'], coord['y'])
-                if coord is not snake['body'][-1]:
+                if coord != (snake['body'][-1]['x'], snake['body'][-1]['y']):
                     grid[coord[1]][coord[0]] = SNAKE
-                elif enemies.just_ate(coord):
+                    continue
+                if data['turn'] < 2 or (enemies.just_ate(coord) and is_adjacent(coord, snake_head, data, grid)):
                     grid[coord[1]][coord[0]] = SNAKE
                 else:
                     grid[coord[1]][coord[0]] = TAIL
+
+    for x in grid:
+        print(*x, sep=' ')
 
     return grid
 
@@ -76,6 +84,7 @@ class Board:
     """
     A class for the board itself.
     """
+
     def __init__(self, data, enemies):
         self.height = data['board']['height']
         self.width = data['board']['width']
