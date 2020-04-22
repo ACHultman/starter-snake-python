@@ -69,7 +69,7 @@ def create_grid(data, height, enemies):
                 if coord != (snake['body'][-1]['x'], snake['body'][-1]['y']):
                     grid[coord[1]][coord[0]] = SNAKE
                     continue
-                if data['turn'] < 2 or (enemies.just_ate(coord) and is_adjacent(coord, snake_head, data, grid)):
+                if data['turn'] < 2 or (enemies.just_ate(coord) and distance(coord, snake_head) < 2):
                     grid[coord[1]][coord[0]] = SNAKE
                 else:
                     grid[coord[1]][coord[0]] = TAIL
