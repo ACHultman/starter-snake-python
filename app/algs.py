@@ -109,7 +109,7 @@ def astarsearch(start, end, grid, data):
 
 def bfs(grid, data, start):
     count = 1
-    heads = []
+    bodies = []
     tails = []
     queue = deque([start])
     if grid[start[1]][start[0]] == 0:
@@ -118,10 +118,12 @@ def bfs(grid, data, start):
     while queue:
         curr_node = queue.popleft()
         visited.add(curr_node)
-        neighbours = get_vertex_neighbours(curr_node, data, grid, False)
+        neighbours = get_vertex_neighbours(curr_node, data, grid, all_types=True)
         for neighbour in neighbours:
-            if grid[neighbour[1]][neighbour[0]] == HEAD:
-                heads.append(neighbour)
+            if grid[neighbour[1]][neighbour[0]] in (HEAD, SNAKE):
+                print('BFS Body at ', neighbour)
+                bodies.append(neighbour)
+                continue
             if grid[neighbour[1]][neighbour[0]] == ADJ_HEAD:
                 #print('bfs found adj_head at ', neighbour)
                 continue
@@ -131,4 +133,4 @@ def bfs(grid, data, start):
                 count = count + 1
                 visited.add(neighbour)
                 queue.append(neighbour)
-    return count, tails, heads
+    return count, tails, bodies

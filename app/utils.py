@@ -64,9 +64,31 @@ def direction(path):
         raise RuntimeError('No return direction found in direction(path) where path = ' + str(path))
 
 
+def check_opening_tail(data, bodies):
+    print('In check_opening_tails')
+    print('Bodies: ', bodies)
+    turns_req = 999
+    point = ()
+    for snake in data['board']['snakes']:
+        pos_turns_req = 0
+        snake_body = reversed([(b['x'], b['y']) for b in snake['body']])  # List of body points in reversed order
+        for snake_point in snake_body:
+            pos_turns_req += 1
+            if snake_point in bodies:
+                print('Snake_point ' + str(snake_point) + ' in bodies')
+                if pos_turns_req < turns_req:
+                    turns_req = pos_turns_req
+                    point = snake_point
+    if turns_req < 999:
+        print('Opening tails found, returning: ', point, turns_req)
+        return point, turns_req, True
+    print('No opening tails found')
+    return None, None, False  # Point, turns_req, result
+
+
 def is_dead_end(pos, grid, data, snake):
     tail_vals = []
-    area_size, tails, heads = app.algs.bfs(grid, data, pos)
+    area_size, tails, bodies = app.algs.bfs(grid, data, pos)
     #neighbours = app.algs.get_vertex_neighbours(data, grid, pos)
     #for neighbour in neighbours:
     #    if grid[neighbour[1]][neighbour[0]]
@@ -79,6 +101,26 @@ def is_dead_end(pos, grid, data, snake):
         return False
     elif area_size <= snake.size + 1:  # TODO Account for moving tail
         # Look backwards from tail to find first body part on edge of area
+        point, turns_req, result = check_opening_tail(data, bodies)
+        if result:
+            print('Looks like a tail will open, checking distance...')
+            distance_to_opening = distance(snake.head, point)
+            if point in snake.body:
+                print('Deadend point in snake body')
+                path, f = app.algs.astarsearch(snake.head, point, grid, data)
+                print('Path to dead_end point: ', path)
+                foods = [(f['x'], f['y']) for f in data['board']['food']]
+                print('Foods found:', foods)
+                for food in foods:
+                    if food in path:
+                        turns_req += 1
+                        print('Food in path, turns_req is now ', turns_req)
+            if distance_to_opening >= turns_req:  # If distance greater or equal to turns needed
+                print('Distance_to_opening greater or equal to turns_req, no dead end')
+                return False
+            else:
+                print('Distance_to_opening smaller than turns_req, returning TRUE')
+                return True
         print('Looks like dead-end, size: ', area_size)
         return True
     else:
