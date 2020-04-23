@@ -30,10 +30,11 @@ def close_to_border(pos, height):
     dy_down = pos[1] + 1
     dx_left = pos[0] - 1
     dx_right = pos[0] + 1
-    if 0 in (dy_up, dx_left) or height in (dy_down, dx_right):
+    if 0 in (dy_up, dx_left) or height-1 in (dy_down, dx_right):
         print('close_to_border: TRUE at ', pos)
         return True
     else:
+        print('close_to_border: FALSE at ', pos)
         return False
 
 

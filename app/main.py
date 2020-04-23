@@ -24,7 +24,7 @@ def is_threat(pos, grid, snake, data, enemies):
         y2 = neighbour[1]
         x2 = neighbour[0]
         current_pos = grid[y2][x2]
-        if current_pos in [HEAD, SNAKE] and neighbour not in snake.body:  # If position is snake and is not mine
+        if current_pos in (HEAD, ADJ_HEAD, SNAKE) and neighbour not in snake.body:  # If position is snake and is not mine
             print('pos near enemy snake')
             print('current neighbour x2, y2: ', (x2, y2))
             if neighbour in enemies.heads:  # If neighbour is enemy head
@@ -101,7 +101,6 @@ def survive(snake, data, grid):
             if is_adj(new_move, data, grid, TAIL):
                 path.append(new_move)
                 break
-
             if count > largest:
                 largest = count
                 best_move = new_move
@@ -226,17 +225,20 @@ def food_path(foods, data, snake, grid, enemies):
     path = None
     f = 0
     for food in foods.coords:
-        enemy, enemy_distance = closest(enemies.heads, food)
+        print('Looking at food: ', food)
+        enemy_head, enemy_distance = closest(enemies.heads, food)
         my_distance = distance(snake.head, food)
-        enemy_bigger = enemies.enemy_size(enemy) >= snake.size
+        enemy_bigger = enemies.enemy_size(enemy_head) >= snake.size
+        enemy_foods = sorted(foods.coords, key=lambda p: distance(p, enemy_head))
         if enemy_distance < 2 < my_distance:  # If enemy is next to food and I am not
             continue
         if enemy_distance < my_distance:  # If enemy is closer to food
-            enemy_foods = sorted(foods.coords, key=lambda p: distance(p, snake.head))
-            if food in enemy_foods[0]:  # If targeted food is closest to enemy
+            if food == enemy_foods[0]:  # If targeted food is closest to enemy
+                print('Looks like enemy is closer', enemy_head)
                 continue
         if enemy_distance == my_distance and enemy_bigger:  # If we are equidistant but enemy is bigger
-            continue
+            if food == enemy_foods[0] and data['turn'] < 15:  # If targeted food is closest to enemy
+                continue
         target = food
         path, f = astarsearch(snake.head, target, grid, data)  # get A* shortest path
         if len(path) <= 1:
