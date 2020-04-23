@@ -8,6 +8,7 @@ FOOD = 2
 WALKABLE = 1
 SNAKE = -1
 HEAD = -2
+ADJ_HEAD = -3
 TAIL = 0
 
 
@@ -64,14 +65,18 @@ def direction(path):
         raise RuntimeError('No return direction found in direction(path) where path = ' + str(path))
 
 
-def check_opening_tail(data, bodies):
+def check_opening_tail(data, grid, bodies):
     print('In check_opening_tails')
     print('Bodies: ', bodies)
     turns_req = 999
     point = ()
     for snake in data['board']['snakes']:
         pos_turns_req = 0
+        snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
         snake_body = reversed([(b['x'], b['y']) for b in snake['body']])  # List of body points in reversed order
+        if grid[snake_tail[1]][snake_tail[0]] == ADJ_HEAD:
+            print('Snake tail is adj_head, not open tail', snake_tail)
+            continue
         for snake_point in snake_body:
             pos_turns_req += 1
             if snake_point in bodies:
@@ -101,7 +106,7 @@ def is_dead_end(pos, grid, data, snake):
         return False
     elif area_size <= snake.size + 1:  # TODO Account for moving tail
         # Look backwards from tail to find first body part on edge of area
-        point, turns_req, result = check_opening_tail(data, bodies)
+        point, turns_req, result = check_opening_tail(data, grid, bodies)
         if result:
             print('Looks like a tail will open, checking distance...')
             distance_to_opening = distance(snake.head, point)

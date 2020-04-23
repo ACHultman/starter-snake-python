@@ -163,7 +163,7 @@ def last_check(path, grid, snake, data, enemies):
             count, tails, bodies = bfs(grid, data, neighbour)
             print('count: ', count)
             print('neighbour: ', neighbour)
-            if neighbour in tails:  # If move can be onto enemy tail
+            if neighbour in tails and not enemies.next_to_food(neighbour, data, grid):  # If move can be onto enemy tail
                 return neighbour, True  # Do it
             if count > largest:
                 largest = count
@@ -184,7 +184,7 @@ def last_check(path, grid, snake, data, enemies):
     enemies.heads = sorted(enemies.heads, key=lambda p: distance(p, snake.head))
     enemy_head = enemies.heads[0]
     is_duel = len(path) > 1 and (len(enemies.heads) == 1 or distance(snake.head, enemy_head) < 5) and \
-              enemies.enemy_size(enemies.heads[0]) > snake.size and snake.health > 30
+              enemies.enemy_size(enemy_head) > snake.size and snake.health > 30
     pos_moves = check_neighbours_for(data, grid, snake.head, 1)
     better_moves = eliminate_risk(data, grid, pos_moves)
 
