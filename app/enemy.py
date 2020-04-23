@@ -115,13 +115,13 @@ class Enemy:
         if not snake:
             return False
         snake_head = (snake['body'][0]['x'], snake['body'][0]['y'])
-        if adj_food(snake_head, data, grid):
+        if is_adj(snake_head, data, grid, FOOD):
             return True
         else:
             return False
 
     def find_adj_enemy(self, pos, data, grid):
-        neighbours = get_vertex_neighbours(pos, data, grid)
+        neighbours = get_vertex_neighbours(pos, data, grid, all=True)
         for neighbour in neighbours:
             snake = self.get_enemy(neighbour)
             if snake:

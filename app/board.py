@@ -51,6 +51,16 @@ def danger_near_head(data, height, enemy):
             return False
 
 
+def is_threat_beside(pos, data, grid, enemies):
+    if not is_adj(pos, data, grid, HEAD):
+        return False
+    enemy = enemies.find_adj_enemy(pos, data, grid)
+    if len(enemy['body']) <= len(data['you']['body']):
+        return False
+    print('Threat beside ', pos)
+    return True
+
+
 def create_grid(data, height, enemies):
     """
     Initializes the grid as a 2D list based on given data.
@@ -99,8 +109,10 @@ def create_grid(data, height, enemies):
                 if coord != snake_tail:
                     grid[coord[1]][coord[0]] = SNAKE
                     continue
-                tail_threat = data['turn'] < 2 or (enemies.just_ate(coord) and distance(coord, snake_head) < 2) or \
-                              (enemies.just_ate(coord) and adj_food(snake_head, data, grid))
+                # If bigger enemy beside tail, or I just ate and beside tail, or I just ate and have food close
+                threat_beside = is_threat_beside(coord, data, grid, enemies)
+                eating_tail_close = (enemies.just_ate(coord) and is_adj(snake_head, data, grid, FOOD) and distance(coord, snake_head) < 3)
+                tail_threat = data['turn'] < 2 or (enemies.just_ate(coord) and distance(coord, snake_head) < 2) or eating_tail_close or threat_beside
                 if tail_threat:
                     grid[coord[1]][coord[0]] = SNAKE
                 else:
