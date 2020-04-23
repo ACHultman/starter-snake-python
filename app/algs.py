@@ -121,7 +121,6 @@ def bfs(grid, data, start):
         neighbours = get_vertex_neighbours(curr_node, data, grid, all_types=True)
         for neighbour in neighbours:
             if grid[neighbour[1]][neighbour[0]] in (HEAD, SNAKE):
-                print('BFS Body at ', neighbour)
                 bodies.append(neighbour)
                 continue
             if grid[neighbour[1]][neighbour[0]] == ADJ_HEAD:

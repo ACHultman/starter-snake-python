@@ -1,3 +1,6 @@
+from app.utils import *
+from app.algs import *
+
 NAME = "ACHultman / Fer-de-lance"
 FOOD = 2
 WALKABLE = 1
@@ -6,8 +9,6 @@ HEAD = -2
 ADJ_HEAD = -3
 TAIL = 0
 
-from app.utils import *
-from app.algs import *
 
 
 def in_bounds(x, y, data):
@@ -26,30 +27,43 @@ def in_bounds(x, y, data):
 
 
 def close_to_border(pos, height):
+    points = []
+    result = False
     dy_up = pos[1] - 1
     dy_down = pos[1] + 1
     dx_left = pos[0] - 1
     dx_right = pos[0] + 1
-    if 0 in (dy_up, dx_left) or height-1 in (dy_down, dx_right):
-        print('close_to_border: TRUE at ', pos)
-        return True
-    else:
-        print('close_to_border: FALSE at ', pos)
-        return False
+
+    if dy_up == 0:
+        points.append((pos[0], dy_up))
+        result = True
+    if dy_down == height - 1:
+        points.append((pos[0], dy_down))
+        result = True
+    if dx_left == 0:
+        points.append((dx_left, pos[1]))
+        result = True
+    if dx_right == height - 1:
+        points.append((dx_right, pos[1]))
+        result = True
+    print('Close to border returning ', points, result)
+    return points, result
 
 
 def danger_near_head(data, height, enemy):
     if len(enemy['body']) >= len(data['you']['body']):  # If enemy equal size or larger
         print('danger_near_head return TRUE')
-        return True
+        return None, True
     else:
         enemy_head = (enemy['body'][0]['x'], enemy['body'][0]['y'])
-        if close_to_border(enemy_head, height):  # Else if smaller enemy close to border
+        points, result = close_to_border(enemy_head, height)
+        # Else if smaller enemy close to border
+        if result:
             print('danger_near_head return TRUE')
-            return True
+            return points, True
         else:
             print('danger_near_head return FALSE')
-            return False
+            return None, False
 
 
 def is_threat_beside(pos, data, grid, enemies):
@@ -93,13 +107,17 @@ def create_grid(data, height, enemies):
                     continue
                 elif coord == snake_head:  # If coord is head
                     grid[coord[1]][coord[0]] = HEAD
-                    if danger_near_head(data, height, snake):
-                        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:  # For all adjacent coordinates
+                    points, border_result = danger_near_head(data, height, snake)
+                    if border_result and not points:
+                        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
                             x2 = coord[0] + dx
                             y2 = coord[1] + dy
-                            if not in_bounds(x2, y2, data):  # Check if in bounds
+                            if not in_bounds(x2, y2, data):
                                 continue
-                            grid[y2][x2] = ADJ_HEAD  # Mark coordinate as head
+                            grid[y2][x2] = ADJ_HEAD
+                    elif border_result and points:
+                        for point in points:  # For all marked coordinates
+                            grid[point[1]][point[0]] = ADJ_HEAD  # Mark coordinate as head
                         continue
                 else:
                     grid[coord[1]][coord[0]] = SNAKE  # Documents other snake's bodies for later evasion.
@@ -112,15 +130,18 @@ def create_grid(data, height, enemies):
                     continue
                 # If bigger enemy beside tail, or I just ate and beside tail, or I just ate and have food close
                 threat_beside = is_threat_beside(coord, data, grid, enemies)
-                eating_tail_close = (enemies.just_ate(coord) and is_adj(snake_head, data, grid, FOOD) and distance(coord, snake_head) < 3)
-                tail_threat = data['turn'] < 2 or (enemies.just_ate(coord) and distance(coord, snake_head) < 2) or eating_tail_close or threat_beside
+                eating_tail_close = (
+                        enemies.just_ate(coord) and is_adj(snake_head, data, grid, FOOD) and distance(coord,
+                                                                                                      snake_head) < 3)
+                tail_threat = data['turn'] < 2 or (enemies.just_ate(coord) and distance(coord,
+                                                                                        snake_head) < 2) or eating_tail_close or threat_beside
                 if tail_threat:
                     grid[coord[1]][coord[0]] = SNAKE
                 else:
                     grid[coord[1]][coord[0]] = TAIL
 
-    #for x in grid:
-    #    print(*x, sep='  ')
+    for x in grid:
+        print(*x, sep='  ')
 
     return grid
 
