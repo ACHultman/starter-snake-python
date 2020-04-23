@@ -66,7 +66,7 @@ def direction(path):
 
 def is_dead_end(pos, grid, data, snake):
     tail_vals = []
-    area_size, tails, heads = app.algs.bfs(grid, data, pos)
+    area_size, tails, bodies = app.algs.bfs(grid, data, pos)
     #neighbours = app.algs.get_vertex_neighbours(data, grid, pos)
     #for neighbour in neighbours:
     #    if grid[neighbour[1]][neighbour[0]]
@@ -79,6 +79,7 @@ def is_dead_end(pos, grid, data, snake):
         return False
     elif area_size <= snake.size + 1:  # TODO Account for moving tail
         # Look backwards from tail to find first body part on edge of area
+
         print('Looks like dead-end, size: ', area_size)
         return True
     else:

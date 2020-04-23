@@ -69,7 +69,7 @@ def survive(snake, data, grid):
 
     path.append(snake.head)
 
-    count, tails, heads = bfs(grid, data, snake.head)  # use heads
+    count, tails, bodies = bfs(grid, data, snake.head)  # use heads
 
     if len(tails) > 0:
         tails = sorted(tails, key=lambda p: distance(p, snake.head))
@@ -145,7 +145,7 @@ def last_check(path, grid, snake, data, enemies):
         largest = 0
         best_move = None
         for neighbour in new_moves:
-            count, tails, heads = bfs(grid, data, neighbour)
+            count, tails, bodies = bfs(grid, data, neighbour)
             print('count: ', count)
             print('neighbour: ', neighbour)
             if neighbour in tails:  # If move can be onto enemy tail
@@ -237,7 +237,8 @@ def food_path(foods, data, snake, grid, enemies):
                 print('Looks like enemy is closer', enemy_head)
                 continue
         if enemy_distance == my_distance and enemy_bigger:  # If we are equidistant but enemy is bigger
-            if food == enemy_foods[0] and data['turn'] < 15:  # If targeted food is closest to enemy
+            if food == enemy_foods[0] and (data['turn'] < 15 or len(enemies.heads) < 2) and snake.health > 40:  # If
+                # targeted food is closest to enemy
                 continue
         target = food
         path, f = astarsearch(snake.head, target, grid, data)  # get A* shortest path
