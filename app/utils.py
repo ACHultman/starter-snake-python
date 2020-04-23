@@ -86,16 +86,16 @@ def is_dead_end(pos, grid, data, snake):
         return False
 
 
-def adj_food(pos, data, grid):
-    neighbours = app.algs.get_vertex_neighbours(pos, data, grid)
+def is_adj(pos, data, grid, arg):
+    neighbours = app.algs.get_vertex_neighbours(pos, data, grid, all=True)
     for neighbour in neighbours:
-        if grid[neighbour[1]][neighbour[0]] == 2:
+        if grid[neighbour[1]][neighbour[0]] == arg:
             return True
     return False
 
 
 def is_adjacent(coord, snake_head, data, grid):
-    neighbours = app.algs.get_vertex_neighbours(coord, data, grid)
+    neighbours = app.algs.get_vertex_neighbours(coord, data, grid, False)
     if snake_head in neighbours:
         print('Head next to tail')
         return True

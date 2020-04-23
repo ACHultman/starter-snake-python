@@ -13,7 +13,7 @@ ADJ_HEAD = -3
 TAIL = 0
 
 
-def get_vertex_neighbours(pos, data, grid):
+def get_vertex_neighbours(pos, data, grid, all):
     n = []
     # Moves allowed are Manhattan-style
     for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -21,10 +21,8 @@ def get_vertex_neighbours(pos, data, grid):
         y2 = pos[1] + dy
         if not in_bounds(x2, y2, data):
             continue
-        elif grid[y2][x2] in (SNAKE, HEAD):
+        elif not all and grid[y2][x2] in (SNAKE, HEAD):
             continue
-        #elif not panic and grid[y2][x2] in [SNAKE, ADJ_HEAD, HEAD]:
-         #   continue
         n.append((x2, y2))
     return n
 
@@ -86,7 +84,7 @@ def astarsearch(start, end, grid, data):
         closedVertices.add(current)
 
         # Update scores for vertices near the current position
-        for neighbour in get_vertex_neighbours(current, data, grid):
+        for neighbour in get_vertex_neighbours(current, data, grid, False):
             if neighbour in closedVertices:
                 continue  # We have already processed this node exhaustively
             candidateG = G[current] + 1
@@ -120,12 +118,12 @@ def bfs(grid, data, start):
     while queue:
         curr_node = queue.popleft()
         visited.add(curr_node)
-        neighbours = get_vertex_neighbours(curr_node, data, grid)
+        neighbours = get_vertex_neighbours(curr_node, data, grid, False)
         for neighbour in neighbours:
             if grid[neighbour[1]][neighbour[0]] == HEAD:
                 heads.append(neighbour)
             if grid[neighbour[1]][neighbour[0]] == ADJ_HEAD:
-                print('bfs found adj_head at ', neighbour)
+                #print('bfs found adj_head at ', neighbour)
                 continue
             if grid[neighbour[1]][neighbour[0]] == TAIL:  # TODO also count heads
                 tails.append(neighbour)
