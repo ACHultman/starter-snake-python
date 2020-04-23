@@ -95,13 +95,17 @@ class Enemy:
         else:
             raise RuntimeError('No snake found in enemy_size')
 
-    def largest_size(self):
+    def largest_size(self, snake):
         """
         Finds largest size
         :return: size (int)
         """
         largest = 0
-        for size in self.size_dict.values():
+        for s_id in self.size_dict.keys():
+            if s_id == snake.id:
+                print('Passing own snake id in largest_size')
+                continue
+            size = self.size_dict[s_id]
             if size > largest:
                 largest = size
         return largest

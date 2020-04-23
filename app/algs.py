@@ -21,7 +21,7 @@ def get_vertex_neighbours(pos, data, grid):
         y2 = pos[1] + dy
         if not in_bounds(x2, y2, data):
             continue
-        elif grid[y2][x2] in [SNAKE, HEAD]:
+        elif grid[y2][x2] in (SNAKE, HEAD):
             continue
         #elif not panic and grid[y2][x2] in [SNAKE, ADJ_HEAD, HEAD]:
          #   continue
@@ -124,7 +124,8 @@ def bfs(grid, data, start):
         for neighbour in neighbours:
             if grid[neighbour[1]][neighbour[0]] == HEAD:
                 heads.append(neighbour)
-            if grid[neighbour[1]][neighbour[0]] < 0:
+            if grid[neighbour[1]][neighbour[0]] == ADJ_HEAD:
+                print('bfs found adj_head at ', neighbour)
                 continue
             if grid[neighbour[1]][neighbour[0]] == TAIL:  # TODO also count heads
                 tails.append(neighbour)
