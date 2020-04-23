@@ -125,7 +125,7 @@ def last_check(path, grid, snake, data, enemies):
     trouble = False
 
     if len(path) <= 1 or is_threat(path[1], grid, snake, data, enemies) or path[1] in snake.body:
-        if len(path) > 1 and path[1] == snake.tail:
+        if len(path) > 1 and grid[path[1][1]][path[1][0]] == TAIL:
             return path[1], False
         trouble = True
         neighbours = get_vertex_neighbours(snake.head, data, grid, False)
