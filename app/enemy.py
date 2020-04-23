@@ -10,7 +10,7 @@ def init_enemy_size(data):
     """
     snakes = data['board']['snakes']
     size_dict = {snake['id']: len(snake['body']) for snake in snakes}
-    print('Initialized size_dict')
+    #print('Initialized size_dict')
     return size_dict
 
 
@@ -45,7 +45,7 @@ class Enemy:
             snake_size = len(snake['body'])
             if self.size_dict[snake['id']] != snake_size:
                 self.size_dict[snake['id']] = snake_size
-                print(snake['name'] + 'is now ' + str(snake_size))
+                #print(snake['name'] + 'is now ' + str(snake_size))
 
     def just_ate(self, pos):
         """
@@ -56,17 +56,17 @@ class Enemy:
         ate = False
         snake = self.get_enemy(pos)
         if not snake:
-            print('just_ate no snake found')
+            #print('just_ate no snake found')
             return False
         snake_length = len(snake["body"])
         if snake_length >= 3:
             tail = snake["body"][-1]
             tail_body = snake["body"][-2]
             if tail != tail_body:
-                print("Snake didn't eat")
+                #print("Snake didn't eat")
                 ate = False
             else:
-                print("Snake ate")
+                #print("Snake ate")
                 ate = True
         return ate
 
@@ -80,7 +80,7 @@ class Enemy:
             for coord in snake['body']:
                 if pos == (coord['x'], coord['y']):
                     return snake
-        print('No snake found there')
+        #print('No snake found there')
         return None
 
     def enemy_size(self, pos):
@@ -103,7 +103,7 @@ class Enemy:
         largest = 0
         for s_id in self.size_dict.keys():
             if s_id == snake.id:
-                print('Passing own snake id in largest_size')
+                #print('Passing own snake id in largest_size')
                 continue
             size = self.size_dict[s_id]
             if size > largest:
@@ -126,5 +126,5 @@ class Enemy:
             snake = self.get_enemy(neighbour)
             if snake:
                 return snake
-        print('No adj enemy found')
+        #print('No adj enemy found')
         return None

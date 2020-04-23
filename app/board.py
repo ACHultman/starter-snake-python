@@ -46,23 +46,23 @@ def close_to_border(pos, height):
     if dx_right == height - 1:
         points.append((dx_right, pos[1]))
         result = True
-    print('Close to border returning ', points, result)
+    ##print('Close to border returning ', points, result)
     return points, result
 
 
 def danger_near_head(data, height, enemy):
     if len(enemy['body']) >= len(data['you']['body']):  # If enemy equal size or larger
-        print('danger_near_head return TRUE')
+        ##print('danger_near_head return TRUE')
         return None, True
     else:
         enemy_head = (enemy['body'][0]['x'], enemy['body'][0]['y'])
         points, result = close_to_border(enemy_head, height)
         # Else if smaller enemy close to border
         if result:
-            print('danger_near_head return TRUE')
+            ##print('danger_near_head return TRUE')
             return points, True
         else:
-            print('danger_near_head return FALSE')
+            ##print('danger_near_head return FALSE')
             return None, False
 
 
@@ -72,7 +72,7 @@ def is_threat_beside(pos, data, grid, enemies):
     enemy = enemies.find_adj_enemy(pos, data, grid)
     if len(enemy['body']) <= len(data['you']['body']):
         return False
-    print('Threat beside ', pos)
+    ##print('Threat beside ', pos)
     return True
 
 
@@ -141,7 +141,7 @@ def create_grid(data, height, enemies):
                     grid[coord[1]][coord[0]] = TAIL
 
     #for x in grid:
-    #    print(*x, sep='  ')
+    #    ##print(*x, sep='  ')
 
     return grid
 
