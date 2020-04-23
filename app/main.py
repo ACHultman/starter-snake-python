@@ -26,14 +26,14 @@ def is_threat(pos, grid, snake, data, enemies):
         current_pos = grid[y2][x2]
         if current_pos in (
         HEAD, ADJ_HEAD, SNAKE) and neighbour not in snake.body:  # If position is snake and is not mine
-            print('pos near enemy snake')
-            print('current neighbour x2, y2: ', (x2, y2))
+            #print('pos near enemy snake')
+            #print('current neighbour x2, y2: ', (x2, y2))
             if neighbour in enemies.heads:  # If neighbour is enemy head
                 if enemies.enemy_size(neighbour) < snake.size:
-                    print('Nearby enemy is smaller at ', neighbour)
+                    #print('Nearby enemy is smaller at ', neighbour)
                     continue
                 else:
-                    print(' Nearby enemy is bigger at ', neighbour)
+                    #print(' Nearby enemy is bigger at ', neighbour)
                     return True  # Nearby enemy is bigger
             elif neighbour == pos:  # If neighbour is suggested path (and is snake)
                 return True  # Space occupied by snake
@@ -45,15 +45,15 @@ def is_threat(pos, grid, snake, data, enemies):
             return True
 
     elif grid[pos[1]][pos[0]] == ADJ_HEAD:
-        print('Pos is adj_head at ', pos)
+        #print('Pos is adj_head at ', pos)
         return True
 
     if is_dead_end(pos, grid, data, snake):
-        print('Dead end threat detected')
+        #print('Dead end threat detected')
         return True
 
     else:
-        print('No threats found at ', pos)
+        #print('No threats found at ', pos)
         return False  # No enemies found
 
 
@@ -90,15 +90,15 @@ def survive(snake, data, grid):
         elif neighbour in snake.body:  # If neighbour means self-collision, try another move
             continue
         else:  # Suitable move
-            print('new_move is suitable', neighbour)
+            #print('new_move is suitable', neighbour)
             new_moves.append(neighbour)
     if len(new_moves) > 0:
         largest = 0
         best_move = None
         for new_move in new_moves:
             count = bfs(grid, data, new_move)[0]
-            print('count: ', count)
-            print('new_move: ', new_move)
+            #print('count: ', count)
+            #print('new_move: ', new_move)
             if is_adj(new_move, data, grid, TAIL):
                 path.append(new_move)
                 break
@@ -108,23 +108,23 @@ def survive(snake, data, grid):
         path.append(best_move)
         return path
 
-    print('Survive failing...')
+    #print('Survive failing...')
     tail_path, f = astarsearch(snake.head, snake.tail, grid, data)
     if len(tail_path) > 1:
-        print('Plotted path to tail...')
+        #print('Plotted path to tail...')
         return tail_path
     return path
 
 
 def eliminate_risk(data, grid, pos_moves):
-    print('In eliminate risk')
+    #print('In eliminate risk')
     risky_moves = []
     for pos_move in pos_moves:
         if len(check_neighbours_for(data, grid, pos_move, ADJ_HEAD)) > 0:
-            print('pos_move near adj_head, adding to risky_moves: ', pos_move)
+            #print('pos_move near adj_head, adding to risky_moves: ', pos_move)
             risky_moves.append(pos_move)
     best_moves = list(set(pos_moves) - set(risky_moves))
-    print('best moves: ', best_moves)
+    #print('best moves: ', best_moves)
     if len(best_moves) > 0:
         return best_moves
     else:
@@ -150,14 +150,14 @@ def last_check(path, grid, snake, data, enemies):
         trouble = True
         neighbours = get_vertex_neighbours(snake.head, data, grid, False)
         for neighbour in neighbours:
-            print('neighbour: ', neighbour)
+            #print('neighbour: ', neighbour)
             if is_threat(neighbour, grid, snake, data, enemies):  # If still dangerous, try another move
-                print('neighbour is still dangerous!')
+                #print('neighbour is still dangerous!')
                 continue
             elif neighbour in snake.body:  # If neighbour is self-collision, try another move
                 continue
             else:  # Suitable move
-                print('neighbour is suitable', neighbour)
+                #print('neighbour is suitable', neighbour)
                 trouble = False
                 new_moves.append(neighbour)
 
@@ -166,8 +166,8 @@ def last_check(path, grid, snake, data, enemies):
         best_move = None
         for neighbour in new_moves:
             count, tails, bodies = bfs(grid, data, neighbour)
-            print('count: ', count)
-            print('neighbour: ', neighbour)
+            #print('count: ', count)
+            #print('neighbour: ', neighbour)
             if neighbour in tails and not enemies.next_to_food(neighbour, data, grid):  # If move can be onto enemy tail
                 return neighbour, True  # Do it
             if count > largest:
@@ -194,16 +194,16 @@ def last_check(path, grid, snake, data, enemies):
     better_moves = eliminate_risk(data, grid, pos_moves)
 
     if is_duel and len(pos_moves) > 0:  # If one
-        print('Duelling...')
+        #print('Duelling...')
         # last bigger enemy
         duel_move, duel_res = duel_danger(enemies, path, better_moves)
         if duel_res:
             if not is_dead_end(duel_move, grid, data, snake):
-                print('Duel correction: ', duel_move)
+                #print('Duel correction: ', duel_move)
                 return duel_move, True
 
     # elif new_moves == 0 and trouble and len(path) <= 1:
-    #    print('last_check trouble, path to tail')
+    #    #print('last_check trouble, path to tail')
     #    path, f = astarsearch(snake.head, snake.tail, grid, data)
     #    if path and 30 > f > 1:
     #        return path[1], True
@@ -224,7 +224,7 @@ def duel_danger(enemies, path, pos_moves):
     for duel_move in pos_moves:
         if distance(duel_move, enemies.heads[0]) >= distance(path[0],
                                                              enemies.heads[0]):  # If next move is closer to enemy
-            print('Evading in duel')
+            #print('Evading in duel')
             return duel_move, True
     else:
         return pos_moves[0], False
@@ -245,7 +245,7 @@ def food_path(foods, data, snake, grid, enemies):
     path = None
     f = 0
     for food in foods.coords:
-        print('Looking at food: ', food)
+        #print('Looking at food: ', food)
         enemy_head, enemy_distance = closest(enemies.heads, food)
         my_distance = distance(snake.head, food)
         enemy_bigger = enemies.enemy_size(enemy_head) >= snake.size
@@ -254,7 +254,7 @@ def food_path(foods, data, snake, grid, enemies):
             continue
         if enemy_distance < my_distance:  # If enemy is closer to food
             if food == enemy_foods[0]:  # If targeted food is closest to enemy
-                print('Looks like enemy is closer', enemy_head)
+                #print('Looks like enemy is closer', enemy_head)
                 continue
         if enemy_distance == my_distance and enemy_bigger:  # If we are equidistant but enemy is bigger
             if food == enemy_foods[0] and (data['turn'] < 15 or len(enemies.heads) < 2) and snake.health > 40:  # If
@@ -267,14 +267,14 @@ def food_path(foods, data, snake, grid, enemies):
         elif f > 100:
             continue
         elif len(path) == 2:
-            print('food is close')
+            #print('food is close')
             if is_threat(target, grid, snake, data, enemies):
                 continue
             else:
                 break
         else:
-            print("Path to food: " + str(path))
-            print('Path to food COST: ', f)
+            #print("Path to food: " + str(path))
+            #print('Path to food COST: ', f)
             break
     return path, f
 
@@ -294,23 +294,23 @@ def kill_path(enemies, snake, data, grid):
     for enemy in enemy_coords:
         enemy_size = enemies.enemy_size(enemy)
         if is_adj(enemy, data, grid, FOOD):
-            print('Target close to food')
+            #print('Target close to food')
             enemy_size = enemy_size + 1
         if enemy_size >= snake.size:
-            print('Enemy too big')
+            #print('Enemy too big')
             continue
         else:
             target = (enemy[0], enemy[1])
             path, f = astarsearch(snake.head, target, grid, data)  # get A* shortest path
             if len(path) <= 1:
-                print('Invalid path')
+                #print('Invalid path')
                 continue
             elif f > 15:
-                print('f too large: ', f)
+                #print('f too large: ', f)
                 continue
             else:
-                print("Path to enemy: " + str(path))
-                print('Path to enemy COST: ', f)
+                #print("Path to enemy: " + str(path))
+                #print('Path to enemy COST: ', f)
                 return path, True
     return path, False
 
@@ -367,22 +367,22 @@ def move():
     enemies = Enemy(own_snake, data)
     game_board = Board(data, enemies)
 
-    print('********** MOVE ' + str(game_board.turn) + ' *************')
+    #print('********** MOVE ' + str(game_board.turn) + ' *************')
     can_hunt = own_snake.size > enemies.largest_size(own_snake) and own_snake.health > 30 and game_board.turn > 15
     if can_hunt:  # Kill logic
-        print('HUNTING...')
+        #print('HUNTING...')
         path, result_1 = kill_path(enemies, own_snake, data, game_board.grid)
         if result_1:
-            print('KILL PATH FOUND')
+            #print('KILL PATH FOUND')
             new_move, result_2 = last_check(path, game_board.grid, own_snake, data, enemies)
             if result_2:
                 path[1] = new_move
-            print('MOVING TO KILL')
+            #print('MOVING TO KILL')
             enemies.update_enemy_size()
             return move_response(direction(path))
 
     cur_path, f = food_path(game_foods, data, own_snake, game_board.grid, enemies)  # Food logic
-    print('Path to food: ', cur_path)
+    #print('Path to food: ', cur_path)
 
     should_chase_tail = (cur_path is None or len(cur_path) <= 1 or f > 100) or (
                 own_snake.health > 70 and own_snake.size > enemies.largest_size(own_snake))
@@ -390,21 +390,21 @@ def move():
         if game_board.in_centre(own_snake.head):
             target = own_snake.tail  # Make target snake's own tail
             cur_path, f = astarsearch(own_snake.head, target, game_board.grid, data)  # get A* shortest path to tail
-            print("PATH TO TAIL:" + str(cur_path))
+            #print("PATH TO TAIL:" + str(cur_path))
         else:
             target = ((game_board.width-1)/2, (game_board.height-1)/2)  # Make target mid
             cur_path, f = astarsearch(own_snake.head, target, game_board.grid, data)  # get A* shortest path to mid
-            print("PATH TO MID:" + str(cur_path))
+            #print("PATH TO MID:" + str(cur_path))
     new_move, result = last_check(cur_path, game_board.grid, own_snake, data, enemies)
     if result:
-        print('LAST_CHECK CORRECTION: ', new_move)
+        #print('LAST_CHECK CORRECTION: ', new_move)
         if len(cur_path) <= 1:
             cur_path.append(new_move)
         else:
             cur_path[1] = new_move
 
     response = direction(cur_path)
-    print('moving: ', response)
+    #print('moving: ', response)
     enemies.update_enemy_size()
     return move_response(response)
 

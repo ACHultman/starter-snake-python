@@ -16,8 +16,8 @@ def distance(p, q):
     """
     Helper function for finding Manhattan distance between two cartesian points.
     """
-    # print('p: ', p)
-    # print('q: ', q)
+    # #print('p: ', p)
+    # #print('q: ', q)
     dx = abs(int(p[0]) - q[0])
     dy = abs(int(p[1]) - q[1])
     return dx + dy
@@ -32,7 +32,7 @@ def closest(items, ref):
 
     # TODO: use builtin min for speed up
     for item in items:
-        # print('item: ', item)
+        # #print('item: ', item)
         item_distance = distance(ref, item)
         if item_distance < closest_distance:
             closest_item = item
@@ -50,7 +50,7 @@ def direction(path):
         x_delta = path[1][0] - path[0][0]  # Get delta of the first two path x coordinates.
         y_delta = path[1][1] - path[0][1]  # Get delta of the first two path y coordinates.
     except IndexError:
-        # print("It appears there is no path.")
+        # #print("It appears there is no path.")
         return "no path"  # TODO Implement smarter method
 
     if x_delta is 1:
@@ -66,8 +66,8 @@ def direction(path):
 
 
 def check_opening_tail(data, grid, bodies):
-    print('In check_opening_tails')
-    print('Bodies: ', bodies)
+    #print('In check_opening_tails')
+    #print('Bodies: ', bodies)
     turns_req = 999
     point = ()
     for snake in data['board']['snakes']:
@@ -75,19 +75,19 @@ def check_opening_tail(data, grid, bodies):
         snake_tail = (snake['body'][-1]['x'], snake['body'][-1]['y'])
         snake_body = reversed([(b['x'], b['y']) for b in snake['body']])  # List of body points in reversed order
         if grid[snake_tail[1]][snake_tail[0]] == ADJ_HEAD:
-            print('Snake tail is adj_head, not open tail', snake_tail)
+            #print('Snake tail is adj_head, not open tail', snake_tail)
             continue
         for snake_point in snake_body:
             pos_turns_req += 1
             if snake_point in bodies:
-                print('Snake_point ' + str(snake_point) + ' in bodies')
+                #print('Snake_point ' + str(snake_point) + ' in bodies')
                 if pos_turns_req < turns_req:
                     turns_req = pos_turns_req
                     point = snake_point
     if turns_req < 999:
-        print('Opening tails found, returning: ', point, turns_req)
+        #print('Opening tails found, returning: ', point, turns_req)
         return point, turns_req, True
-    print('No opening tails found')
+    #print('No opening tails found')
     return None, None, False  # Point, turns_req, result
 
 
@@ -100,36 +100,36 @@ def is_dead_end(pos, grid, data, snake):
     for tail in tails:
         tail_vals.append(grid[tail[1]][tail[0]])
     if TAIL in tail_vals:
-        print('is_dead_end found tail, returning false')
-        print('tails: ', tails)
-        print('pos in question: ', pos)
+        #print('is_dead_end found tail, returning false')
+        #print('tails: ', tails)
+        #print('pos in question: ', pos)
         return False
     elif area_size <= snake.size + 1:  # TODO Account for moving tail
         # Look backwards from tail to find first body part on edge of area
         point, turns_req, result = check_opening_tail(data, grid, bodies)
         if result:
-            print('Looks like a tail will open, checking distance...')
+            #print('Looks like a tail will open, checking distance...')
             distance_to_opening = distance(snake.head, point)
             if point in snake.body:
-                print('Deadend point in snake body')
+                #print('Deadend point in snake body')
                 path, f = app.algs.astarsearch(snake.head, point, grid, data)
-                print('Path to dead_end point: ', path)
+                #print('Path to dead_end point: ', path)
                 foods = [(f['x'], f['y']) for f in data['board']['food']]
-                print('Foods found:', foods)
+                #print('Foods found:', foods)
                 for food in foods:
                     if food in path:
                         turns_req += 1
-                        print('Food in path, turns_req is now ', turns_req)
+                        #print('Food in path, turns_req is now ', turns_req)
             if distance_to_opening >= turns_req:  # If distance greater or equal to turns needed
-                print('Distance_to_opening greater or equal to turns_req, no dead end')
+                #print('Distance_to_opening greater or equal to turns_req, no dead end')
                 return False
             else:
-                print('Distance_to_opening smaller than turns_req, returning TRUE')
+                #print('Distance_to_opening smaller than turns_req, returning TRUE')
                 return True
-        print('Looks like dead-end, size: ', area_size)
+        #print('Looks like dead-end, size: ', area_size)
         return True
     else:
-        print('No dead end found at ', pos)
+        #print('No dead end found at ', pos)
         return False
 
 
@@ -144,7 +144,7 @@ def is_adj(pos, data, grid, arg):
 def is_adjacent(coord, snake_head, data, grid):
     neighbours = app.algs.get_vertex_neighbours(coord, data, grid, False)
     if snake_head in neighbours:
-        print('Head next to tail')
+        #print('Head next to tail')
         return True
     else:
         return False
