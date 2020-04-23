@@ -157,3 +157,22 @@ class Board:
         self.board = data['board']
         self.turn = data['turn']
         self.grid = create_grid(data, self.height, enemies)
+
+    def in_centre(self, pos):
+        '''
+        Determines if position is in centre of grid
+        :param pos:
+        :return:
+        '''
+        x = pos[0]
+        y = pos[1]
+        x_mid = False
+        y_mid = False
+        if 2 < x < self.height-3:
+            x_mid = True
+        if 2 < y < self.height-3:
+            y_mid = True
+        if x_mid and y_mid:
+            return True
+        else:
+            return False
