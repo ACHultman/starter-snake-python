@@ -111,6 +111,21 @@ def survive(snake, data, grid):
     return path
 
 
+def eliminate_risk(data, grid, pos_moves):
+    print('In eliminate risk')
+    risky_moves = []
+    for pos_move in pos_moves:
+        if len(check_neighbours_for(data, grid, pos_move, ADJ_HEAD)) > 0:
+            print('pos_move near adj_head, adding to risky_moves: ', pos_move)
+            risky_moves.append(pos_move)
+    best_moves = list(set(pos_moves) - set(risky_moves))
+    print('best moves: ', best_moves)
+    if len(best_moves) > 0:
+        return best_moves
+    else:
+        return pos_moves
+
+
 def last_check(path, grid, snake, data, enemies):
     """
     Performs a last check of proposed path, edits if necessary
@@ -170,12 +185,13 @@ def last_check(path, grid, snake, data, enemies):
     enemy_head = enemies.heads[0]
     is_duel = len(path) > 1 and (len(enemies.heads) == 1 or distance(snake.head, enemy_head) < 5) and \
               enemies.enemy_size(enemies.heads[0]) > snake.size and snake.health > 30
-    pos_moves = check_neighbours(data, grid, snake)
+    pos_moves = check_neighbours_for(data, grid, snake.head, 1)
+    better_moves = eliminate_risk(data, grid, pos_moves)
 
-    if is_duel and len(pos_moves) > 1:  # If one
+    if is_duel and len(pos_moves) > 0:  # If one
         print('Duelling...')
         # last bigger enemy
-        duel_move, duel_res = duel_danger(enemies, path, pos_moves)
+        duel_move, duel_res = duel_danger(enemies, path, better_moves)
         if duel_res:
             if not is_dead_end(duel_move, grid, data, snake):
                 print('Duel correction: ', duel_move)
@@ -190,13 +206,12 @@ def last_check(path, grid, snake, data, enemies):
     return path[1], False  # TODO Fix bug that ends here without a path
 
 
-def check_neighbours(data, grid, snake):
-    neighbours = get_vertex_neighbours(snake.head, data, grid, False)
+def check_neighbours_for(data, grid, center, arg):
+    neighbours = get_vertex_neighbours(center, data, grid, False)
     pos_moves = []
     for neighbour in neighbours:
-        coord = (neighbour[0], neighbour[1])
-        if grid[coord[1]][coord[0]] == 1:
-            pos_moves.append(coord)
+        if grid[neighbour[1]][neighbour[0]] == arg:
+            pos_moves.append(neighbour)
     return pos_moves
 
 
