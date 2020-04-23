@@ -121,7 +121,7 @@ class Enemy:
             return False
 
     def find_adj_enemy(self, pos, data, grid):
-        neighbours = get_vertex_neighbours(pos, data, grid, all=True)
+        neighbours = get_vertex_neighbours(pos, data, grid, all_types=True)
         for neighbour in neighbours:
             snake = self.get_enemy(neighbour)
             if snake:

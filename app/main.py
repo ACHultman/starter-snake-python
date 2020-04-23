@@ -150,7 +150,7 @@ def last_check(path, grid, snake, data, enemies):
             print('count: ', count)
             print('neighbour: ', neighbour)
             if neighbour in tails:  # If move can be onto enemy tail
-                return neighbour, True   # Do it
+                return neighbour, True  # Do it
             if count > largest:
                 largest = count
                 best_move = neighbour
@@ -182,7 +182,6 @@ def last_check(path, grid, snake, data, enemies):
                 print('Duel correction: ', duel_move)
                 return duel_move, True
 
-
     # elif new_moves == 0 and trouble and len(path) <= 1:
     #    print('last_check trouble, path to tail')
     #    path, f = astarsearch(snake.head, snake.tail, grid, data)
@@ -204,7 +203,8 @@ def check_neighbours(data, grid, snake):
 
 def duel_danger(enemies, path, pos_moves):
     for duel_move in pos_moves:
-        if distance(duel_move, enemies.heads[0]) >= distance(path[0], enemies.heads[0]):  # If next move is closer to enemy
+        if distance(duel_move, enemies.heads[0]) >= distance(path[0],
+                                                             enemies.heads[0]):  # If next move is closer to enemy
             print('Evading in duel')
             return duel_move, True
     else:
@@ -233,7 +233,7 @@ def food_path(foods, data, snake, grid, enemies):
             continue
         if enemy_distance < my_distance:  # If enemy is closer to food
             enemy_foods = sorted(foods.coords, key=lambda p: distance(p, snake.head))
-            if food in (enemy_foods[0], enemy_foods[1]):  # If targeted food is closest to enemy
+            if food in enemy_foods[0]:  # If targeted food is closest to enemy
                 continue
         if enemy_distance == my_distance and enemy_bigger:  # If we are equidistant but enemy is bigger
             continue
@@ -357,7 +357,6 @@ def move():
             print('MOVING TO KILL')
             enemies.update_enemy_size()
             return move_response(direction(path))
-
 
     cur_path, f = food_path(game_foods, data, own_snake, game_board.grid, enemies)  # Food logic
     print('Path to food: ', cur_path)

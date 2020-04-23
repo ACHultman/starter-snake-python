@@ -13,7 +13,7 @@ ADJ_HEAD = -3
 TAIL = 0
 
 
-def get_vertex_neighbours(pos, data, grid, all):
+def get_vertex_neighbours(pos, data, grid, all_types):
     n = []
     # Moves allowed are Manhattan-style
     for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -21,7 +21,7 @@ def get_vertex_neighbours(pos, data, grid, all):
         y2 = pos[1] + dy
         if not in_bounds(x2, y2, data):
             continue
-        elif not all and grid[y2][x2] in (SNAKE, HEAD):
+        elif not all_types and grid[y2][x2] in (SNAKE, HEAD):
             continue
         n.append((x2, y2))
     return n

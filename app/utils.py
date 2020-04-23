@@ -87,7 +87,7 @@ def is_dead_end(pos, grid, data, snake):
 
 
 def is_adj(pos, data, grid, arg):
-    neighbours = app.algs.get_vertex_neighbours(pos, data, grid, all=True)
+    neighbours = app.algs.get_vertex_neighbours(pos, data, grid, all_types=True)
     for neighbour in neighbours:
         if grid[neighbour[1]][neighbour[0]] == arg:
             return True
