@@ -70,7 +70,7 @@ def is_threat_beside(pos, data, grid, enemies):
     if not is_adj(pos, data, grid, HEAD):
         return False
     enemy = enemies.find_adj_enemy(pos, data, grid)
-    if len(enemy['body']) <= len(data['you']['body']):
+    if len(enemy['body']) < len(data['you']['body']):
         return False
     ####print('Threat beside ', pos)
     return True
