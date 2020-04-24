@@ -99,7 +99,7 @@ def is_dead_end(pos, grid, data, snake):
         print('tails: ', tails)
         print('pos in question: ', pos)
         return False
-    elif area_size <= snake.size + 1:  # TODO Account for moving tail
+    elif area_size <= snake.size + 1:
         # Look backwards from tail to find first body part on edge of area
         point, turns_req, result = check_opening_tail(data, bodies)
         if result:

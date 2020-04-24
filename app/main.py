@@ -170,7 +170,7 @@ def last_check(path, grid, snake, data, enemies):
     enemies.heads = sorted(enemies.heads, key=lambda p: distance(p, snake.head))
     enemy_head = enemies.heads[0]
     is_duel = len(path) > 1 and (len(enemies.heads) == 1 or distance(snake.head, enemy_head) < 5) and \
-              enemies.enemy_size(enemies.heads[0]) > snake.size and snake.health > 30
+              enemies.enemy_size(enemies.heads[0]) > snake.size > 3 and snake.health > 30
     pos_moves = check_neighbours(data, grid, snake)
 
     if is_duel and len(pos_moves) > 1:  # If one
@@ -269,10 +269,10 @@ def kill_path(enemies, snake, data, grid):
     :param grid:
     :return: path, if any
     """
-    enemy_coords = sorted(enemies.heads, key=lambda p: distance(p, snake.head))  # Sort enemy list by distance to
+
     # snake's head
     path = None
-    for enemy in enemy_coords:
+    for enemy in enemies.heads:
         enemy_size = enemies.enemy_size(enemy)
         if is_adj(enemy, data, grid, FOOD):
             #print('Target close to food')
@@ -347,9 +347,11 @@ def move():
     own_snake = Snake(data)
     enemies = Enemy(own_snake, data)
     game_board = Board(data, enemies)
+    enemies.heads = sorted(enemies.heads, key=lambda p: distance(p, own_snake.head))  # Sort enemy list by distance to
+    print('********** MOVE ' + str(game_board.turn) + ' *************')
 
-    #print('********** MOVE ' + str(game_board.turn) + ' *************')
-    can_hunt = own_snake.size > enemies.largest_size(own_snake) and own_snake.health > 30 and game_board.turn > 15
+    should_hunt = own_snake.size > enemies.largest_size(own_snake) or distance(enemies.heads[0], own_snake.head) < 4
+    can_hunt = should_hunt and own_snake.health > 30 and own_snake.size > 3
     if can_hunt:  # Kill logic
         #print('HUNTING...')
         path, result_1 = kill_path(enemies, own_snake, data, game_board.grid)
