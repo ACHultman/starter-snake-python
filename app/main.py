@@ -83,13 +83,15 @@ def survive(snake, data, grid):
                 return path
         del path
         path = [snake.head]
-
+    last_resort = []
     neighbours = get_vertex_neighbours(snake.head, data, grid, False)
     for neighbour in neighbours:
         y2 = neighbour[1]
         x2 = neighbour[0]
         if grid[y2][x2] in [SNAKE, HEAD]:  # If neighbour is snake body
             continue
+        elif grid[y2][x2] == ADJ_HEAD:
+            last_resort.append((x2, y2))
         elif neighbour in snake.body:  # If neighbour means self-collision, try another move
             continue
         else:  # Suitable move
@@ -113,7 +115,15 @@ def survive(snake, data, grid):
                 best_move = new_move
         path.append(best_move)
         return path
+
     print('Survive failing...')
+    if len(last_resort) > 0:
+        print('Survive last resort')
+        if len(path) == 1:
+            path.append(last_resort[0])
+        else:
+            path.append(snake.head)
+            path.append(last_resort[0])
     return path
 
 
@@ -170,7 +180,8 @@ def last_check(path, grid, snake, data, enemies):
 
     elif len(path) <= 1 or trouble:
         path = survive(snake, data, grid)
-        return path[1], True
+        if len(path) > 1:
+            return path[1], True
 
     enemies.heads = sorted(enemies.heads, key=lambda p: distance(p, snake.head))
     enemy_head = enemies.heads[0]
