@@ -89,8 +89,12 @@ def check_opening_tail(data, bodies):
 def is_dead_end(pos, grid, data, snake):
     tail_vals = []
     if grid[pos[1]][pos[0]] == FOOD:  # If pos in question is food, make tail a snake body
+        temp_grid_val = grid[snake.tail[1]][snake.tail[0]]
         grid[snake.tail[1]][snake.tail[0]] = SNAKE
-    area_size, tails, bodies, has_adj = app.algs.bfs(grid, data, pos)
+        area_size, tails, bodies, has_adj = app.algs.bfs(grid, data, pos)
+        grid[snake.tail[1]][snake.tail[0]] = temp_grid_val
+    else:
+        area_size, tails, bodies, has_adj = app.algs.bfs(grid, data, pos)
     #neighbours = app.algs.get_vertex_neighbours(data, grid, pos)
     #for neighbour in neighbours:
     #    if grid[neighbour[1]][neighbour[0]]
@@ -107,16 +111,17 @@ def is_dead_end(pos, grid, data, snake):
         if result:
             print('Looks like a tail will open, checking distance...')
             distance_to_opening = distance(snake.head, point)
-            if point in snake.body:
+            temp_grid_val = grid[point[1]][point[0]]
+            if temp_grid_val in (SNAKE, HEAD):
                 print('Dead-end point in snake body')
                 grid[point[1]][point[0]] = 1
-                path, f = app.algs.astarsearch(snake.head, point, grid, data)
-                grid[point[1]][point[0]] = SNAKE
+                path, f = app.algs.astarsearch(pos, point, grid, data)
+                grid[point[1]][point[0]] = temp_grid_val
                 print('Path to dead_end point: ', path)
                 foods = [(f['x'], f['y']) for f in data['board']['food']]
                 #print('Foods found:', foods)
                 for food in foods:
-                    if food in path:
+                    if food in path or pos in food:
                         turns_req += 1
                         print('Food in path, turns_req is now ', turns_req)
             if distance_to_opening >= turns_req:  # If distance greater or equal to turns needed

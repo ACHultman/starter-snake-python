@@ -292,8 +292,10 @@ def kill_path(enemies, snake, data, grid):
             print('Enemy too big')
             continue
         else:
-            target = (enemy[0], enemy[1])
+            target = enemy
+            grid[enemy[1]][enemy[0]] = WALKABLE
             path, f = astarsearch(snake.head, target, grid, data)  # get A* shortest path
+            grid[enemy[1]][enemy[0]] = HEAD
             if len(path) <= 1:
                 print('Invalid path')
                 continue
