@@ -188,7 +188,7 @@ def last_check(path, grid, snake, data, enemies):
 
     enemies.heads = sorted(enemies.heads, key=lambda p: distance(p, snake.head))
     enemy_head = enemies.heads[0]
-    is_duel = len(path) > 0 and (len(enemies.heads) == 1 or distance(snake.head, enemy_head) < 5) and \
+    is_duel = len(path) > 0 and distance(snake.head, enemy_head) < 5 and \
               enemies.enemy_size(enemy_head) > snake.size and snake.health > 30
     pos_moves = check_neighbours_for(data, grid, snake.head, 1)
     better_moves = eliminate_risk(data, grid, pos_moves)
