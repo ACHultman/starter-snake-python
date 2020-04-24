@@ -141,7 +141,7 @@ def create_grid(data, height, enemies):
                     grid[coord[1]][coord[0]] = TAIL
 
     #for x in grid:
-        ##print(*x, sep='  ')
+        #print(*x, sep='  ')
 
     return grid
 
