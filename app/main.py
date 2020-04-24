@@ -202,11 +202,16 @@ def check_neighbours(data, grid, snake):
 
 
 def duel_danger(enemies, path, pos_moves):
+    d_moves = []
     for duel_move in pos_moves:
-        if distance(duel_move, enemies.heads[0]) >= distance(path[0],
-                                                             enemies.heads[0]):  # If next move is closer to enemy
+        if distance(duel_move, enemies.heads[0]) >= distance(path[0], enemies.heads[0]):
+            # If next move is closer to enemy
+            d_moves.append(duel_move)
             #print('Evading in duel')
-            return duel_move, True
+    if path[1] in d_moves:
+        return path[1], True
+    elif len(d_moves) >= 1:
+        return d_moves[0], True
     else:
         return path[1], False
 
@@ -372,7 +377,7 @@ def move():
         cur_path, f = astarsearch(own_snake.head, target, game_board.grid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(cur_path))
 
-    if own_snake.health > 70 and own_snake.size > enemies.largest_size(own_snake):
+    if own_snake.health > 70 and own_snake.size > enemies.largest_size(own_snake) + 2:
         target = own_snake.tail  # Make target snake's own tail
         cur_path, f = astarsearch(own_snake.head, target, game_board.grid, data)  # get A* shortest path to tail
         print("PATH TO TAIL:" + str(cur_path))
