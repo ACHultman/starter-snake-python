@@ -111,6 +111,7 @@ def bfs(grid, data, start):
     count = 1
     bodies = []
     tails = []
+    has_adj = False
     queue = deque([start])
     if grid[start[1]][start[0]] == 0:
         tails.append(start)
@@ -124,6 +125,7 @@ def bfs(grid, data, start):
                 bodies.append(neighbour)
                 continue
             if grid[neighbour[1]][neighbour[0]] == ADJ_HEAD:
+                has_adj = True
                 #print('bfs found adj_head at ', neighbour)
                 continue
             if grid[neighbour[1]][neighbour[0]] == TAIL:  # TODO also count heads
@@ -132,4 +134,4 @@ def bfs(grid, data, start):
                 count = count + 1
                 visited.add(neighbour)
                 queue.append(neighbour)
-    return count, tails, bodies
+    return count, tails, bodies, has_adj
