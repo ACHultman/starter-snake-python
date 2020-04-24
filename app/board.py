@@ -70,7 +70,7 @@ def is_threat_beside(pos, data, grid, enemies):
     if not is_adj(pos, data, grid, HEAD):
         return False
     enemy = enemies.find_adj_enemy(pos, data, grid)
-    if len(enemy['body']) < len(data['you']['body']):
+    if len(enemy['body']) <= len(data['you']['body']):
         return False
     #print('Threat beside ', pos)
     return True
@@ -99,8 +99,9 @@ def create_grid(data, height, enemies):
                 coord = (coord['x'], coord['y'])
 
                 if coord == snake_tail:  # If coord is tail
-                    if data['turn'] < 2 or enemies.just_ate(coord) or distance(snake_head, coord) < 2:  # If turn<2 or
-                        # enemy just ate/grew
+                    if data['turn'] < 2 or enemies.just_ate(coord) or (distance(snake_head, coord) < 2 and
+                                                                       enemies.enemy_size(coord) >= len(you['body'])):
+                        # If turn<2 or enemy just ate/grew or enemy is next to tail and equal or bigger
                         grid[coord[1]][coord[0]] = SNAKE  # Consider the tail a snake body
                     else:
                         grid[coord[1]][coord[0]] = TAIL  # Else mark it as a snake tail
@@ -117,7 +118,7 @@ def create_grid(data, height, enemies):
                             grid[y2][x2] = ADJ_HEAD
                     elif border_result and points:
                         for point in points:  # For all marked coordinates
-                            grid[point[1]][point[0]] = ADJ_HEAD  # Mark coordinate as head
+                            grid[point[1]][point[0]] = ADJ_HEAD  # Mark coordinate as adj_head
                         continue
                 else:
                     grid[coord[1]][coord[0]] = SNAKE  # Documents other snake's bodies for later evasion.
