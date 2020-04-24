@@ -195,6 +195,9 @@ def last_check(path, grid, snake, data, enemies):
 
     if is_duel and len(pos_moves) > 0:  # If one
         #print('Duelling...')
+        if distance(snake.head, enemy_head) > 2 and grid[path[1][1]][path[1][0]] == FOOD:
+            #print('next to food and threat far away')
+            return path[1], False
         # last bigger enemy
         duel_move, duel_res = duel_danger(enemies, path, better_moves)
         if duel_res:
