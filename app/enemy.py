@@ -10,7 +10,7 @@ def init_enemy_size(data):
     """
     snakes = data['board']['snakes']
     size_dict = {snake['id']: len(snake['body']) for snake in snakes}
-    print('Initialized size_dict')
+    #print('Initialized size_dict')
     return size_dict
 
 
@@ -56,17 +56,17 @@ class Enemy:
         ate = False
         snake = self.get_enemy(pos)
         if not snake:
-            print('just_ate no snake found')
+            #print('just_ate no snake found')
             return False
         snake_length = len(snake["body"])
         if snake_length >= 3:
             tail = snake["body"][-1]
             tail_body = snake["body"][-2]
             if tail != tail_body:
-                print("Snake didn't eat")
+                #print("Snake didn't eat")
                 ate = False
             else:
-                print("Snake ate")
+                #print("Snake ate")
                 ate = True
         return ate
 
