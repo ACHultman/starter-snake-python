@@ -89,8 +89,12 @@ def check_opening_tail(data, bodies):
 def is_dead_end(pos, grid, data, snake):
     tail_vals = []
     if grid[pos[1]][pos[0]] == FOOD:  # If pos in question is food, make tail a snake body
+        temp_grid_val = grid[snake.tail[1]][snake.tail[0]]
         grid[snake.tail[1]][snake.tail[0]] = SNAKE
-    area_size, tails, bodies, has_adj = app.algs.bfs(grid, data, pos)
+        area_size, tails, bodies, has_adj = app.algs.bfs(grid, data, pos)
+        grid[snake.tail[1]][snake.tail[0]] = temp_grid_val
+    else:
+        area_size, tails, bodies, has_adj = app.algs.bfs(grid, data, pos)
     #neighbours = app.algs.get_vertex_neighbours(data, grid, pos)
     #for neighbour in neighbours:
     #    if grid[neighbour[1]][neighbour[0]]
